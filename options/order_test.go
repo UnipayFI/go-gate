@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/UnipayFI/go-gate/internal/testutil"
+	"github.com/UnipayFI/go-gate/v4/internal/testutil"
 )
 
 func TestOptionsOrder(t *testing.T) {

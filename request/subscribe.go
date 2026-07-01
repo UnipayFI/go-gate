@@ -9,8 +9,8 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/UnipayFI/go-gate/common"
-	"github.com/UnipayFI/go-gate/pkg/log"
+	"github.com/UnipayFI/go-gate/v4/common"
+	"github.com/UnipayFI/go-gate/v4/pkg/log"
 	"github.com/gorilla/websocket"
 )
 

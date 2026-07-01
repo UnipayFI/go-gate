@@ -8,8 +8,8 @@ import (
 	"net/url"
 	"strings"
 
-	gateCommon "github.com/UnipayFI/go-gate/common"
-	"github.com/UnipayFI/go-gate/pkg/log"
+	gateCommon "github.com/UnipayFI/go-gate/v4/common"
+	"github.com/UnipayFI/go-gate/v4/pkg/log"
 	"github.com/go-resty/resty/v2"
 	"golang.org/x/net/proxy"
 )

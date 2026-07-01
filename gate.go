@@ -1,7 +1,7 @@
 // Package gate is the entry point of the Gate.com (Gate.io) exchange Go SDK.
 //
-// Install: go get github.com/UnipayFI/go-gate
-// Import:  import gate "github.com/UnipayFI/go-gate"
+// Install: go get github.com/UnipayFI/go-gate/v4
+// Import:  import gate "github.com/UnipayFI/go-gate/v4"
 //
 // The SDK covers Gate's v4 REST API and v4 WebSocket streams across every
 // product line, each exposed as its own package with a dedicated client:
@@ -37,20 +37,20 @@
 package gate
 
 import (
-	"github.com/UnipayFI/go-gate/account"
-	"github.com/UnipayFI/go-gate/client"
-	"github.com/UnipayFI/go-gate/delivery"
-	"github.com/UnipayFI/go-gate/earn"
-	"github.com/UnipayFI/go-gate/flashswap"
-	"github.com/UnipayFI/go-gate/futures"
-	"github.com/UnipayFI/go-gate/loan"
-	"github.com/UnipayFI/go-gate/margin"
-	"github.com/UnipayFI/go-gate/options"
-	"github.com/UnipayFI/go-gate/rebate"
-	"github.com/UnipayFI/go-gate/spot"
-	"github.com/UnipayFI/go-gate/subaccount"
-	"github.com/UnipayFI/go-gate/unified"
-	"github.com/UnipayFI/go-gate/wallet"
+	"github.com/UnipayFI/go-gate/v4/account"
+	"github.com/UnipayFI/go-gate/v4/client"
+	"github.com/UnipayFI/go-gate/v4/delivery"
+	"github.com/UnipayFI/go-gate/v4/earn"
+	"github.com/UnipayFI/go-gate/v4/flashswap"
+	"github.com/UnipayFI/go-gate/v4/futures"
+	"github.com/UnipayFI/go-gate/v4/loan"
+	"github.com/UnipayFI/go-gate/v4/margin"
+	"github.com/UnipayFI/go-gate/v4/options"
+	"github.com/UnipayFI/go-gate/v4/rebate"
+	"github.com/UnipayFI/go-gate/v4/spot"
+	"github.com/UnipayFI/go-gate/v4/subaccount"
+	"github.com/UnipayFI/go-gate/v4/unified"
+	"github.com/UnipayFI/go-gate/v4/wallet"
 )
 
 // --- REST clients ---

@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/UnipayFI/go-gate/request"
+	"github.com/UnipayFI/go-gate/v4/request"
 )
 
 // ListSubAccountsService -- GET /api/v4/sub_accounts (private)

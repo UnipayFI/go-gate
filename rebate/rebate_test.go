@@ -3,7 +3,7 @@ package rebate
 import (
 	"testing"
 
-	"github.com/UnipayFI/go-gate/internal/testutil"
+	"github.com/UnipayFI/go-gate/v4/internal/testutil"
 )
 
 // TestRebate live-tests every rebate endpoint. All of them are private and

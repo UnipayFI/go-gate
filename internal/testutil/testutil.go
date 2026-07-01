@@ -13,9 +13,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/UnipayFI/go-gate/client"
-	"github.com/UnipayFI/go-gate/common"
-	"github.com/UnipayFI/go-gate/request"
+	"github.com/UnipayFI/go-gate/v4/client"
+	"github.com/UnipayFI/go-gate/v4/common"
+	"github.com/UnipayFI/go-gate/v4/request"
 )
 
 // Ctx returns a per-test context with a generous timeout.

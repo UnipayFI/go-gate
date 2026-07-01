@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/UnipayFI/go-gate/internal/testutil"
+	"github.com/UnipayFI/go-gate/v4/internal/testutil"
 )
 
 func TestSpotCurrency(t *testing.T) {

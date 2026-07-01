@@ -3,8 +3,8 @@ package delivery
 import (
 	"testing"
 
-	"github.com/UnipayFI/go-gate/client"
-	"github.com/UnipayFI/go-gate/internal/testutil"
+	"github.com/UnipayFI/go-gate/v4/client"
+	"github.com/UnipayFI/go-gate/v4/internal/testutil"
 )
 
 // testPublicClient builds an unauthenticated delivery client for public endpoints.

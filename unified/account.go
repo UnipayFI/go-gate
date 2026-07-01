@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/UnipayFI/go-gate/request"
+	"github.com/UnipayFI/go-gate/v4/request"
 	"github.com/shopspring/decimal"
 )
 

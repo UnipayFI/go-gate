@@ -3,7 +3,7 @@ package futures
 import (
 	"testing"
 
-	"github.com/UnipayFI/go-gate/internal/testutil"
+	"github.com/UnipayFI/go-gate/v4/internal/testutil"
 )
 
 func TestFuturesStats(t *testing.T) {

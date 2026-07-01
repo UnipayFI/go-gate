@@ -23,9 +23,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/UnipayFI/go-gate/client"
-	gateCommon "github.com/UnipayFI/go-gate/common"
-	"github.com/UnipayFI/go-gate/request"
+	"github.com/UnipayFI/go-gate/v4/client"
+	gateCommon "github.com/UnipayFI/go-gate/v4/common"
+	"github.com/UnipayFI/go-gate/v4/request"
 )
 
 func main() {

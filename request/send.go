@@ -6,8 +6,8 @@ import (
 	"net/url"
 	"strconv"
 
-	"github.com/UnipayFI/go-gate/client"
-	"github.com/UnipayFI/go-gate/common"
+	"github.com/UnipayFI/go-gate/v4/client"
+	"github.com/UnipayFI/go-gate/v4/common"
 )
 
 // Do executes the request and decodes the response body into *T. Gate has no

@@ -5,7 +5,7 @@ import (
 	"crypto/sha512"
 	"encoding/hex"
 
-	"github.com/UnipayFI/go-gate/common"
+	"github.com/UnipayFI/go-gate/v4/common"
 )
 
 // SignFn mirrors client.SignFn: it turns the prehash string into the SIGN

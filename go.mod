@@ -1,4 +1,4 @@
-module github.com/UnipayFI/go-gate
+module github.com/UnipayFI/go-gate/v4
 
 go 1.26.0
 

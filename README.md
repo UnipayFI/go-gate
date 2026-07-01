@@ -1,6 +1,6 @@
 # go-gate
 
-[![Go Reference](https://pkg.go.dev/badge/github.com/UnipayFI/go-gate.svg)](https://pkg.go.dev/github.com/UnipayFI/go-gate)
+[![Go Reference](https://pkg.go.dev/badge/github.com/UnipayFI/go-gate/v4.svg)](https://pkg.go.dev/github.com/UnipayFI/go-gate/v4)
 [![Go 1.26+](https://img.shields.io/badge/Go-1.26%2B-00ADD8?logo=go)](go.mod)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
@@ -15,7 +15,7 @@ Response structs are reconciled against the **live API** (not just the docs), so
 ## Install
 
 ```bash
-go get github.com/UnipayFI/go-gate@latest
+go get github.com/UnipayFI/go-gate/v4@latest
 ```
 
 ## Highlights
@@ -34,10 +34,10 @@ import (
 	"context"
 	"fmt"
 
-	gate "github.com/UnipayFI/go-gate"
-	"github.com/UnipayFI/go-gate/client"
-	"github.com/UnipayFI/go-gate/futures"
-	"github.com/UnipayFI/go-gate/spot"
+	gate "github.com/UnipayFI/go-gate/v4"
+	"github.com/UnipayFI/go-gate/v4/client"
+	"github.com/UnipayFI/go-gate/v4/futures"
+	"github.com/UnipayFI/go-gate/v4/spot"
 	"github.com/shopspring/decimal"
 )
 

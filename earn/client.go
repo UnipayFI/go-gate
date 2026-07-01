@@ -3,8 +3,8 @@ package earn
 import (
 	"context"
 
-	"github.com/UnipayFI/go-gate/client"
-	"github.com/UnipayFI/go-gate/request"
+	"github.com/UnipayFI/go-gate/v4/client"
+	"github.com/UnipayFI/go-gate/v4/request"
 )
 
 var _ request.Client = (*EarnClient)(nil)
