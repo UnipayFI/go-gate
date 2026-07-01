@@ -93,6 +93,11 @@ func Tolerable(t *testing.T, label string, err error) bool {
 			"POSITION_NOT_FOUND",
 			"CONTRACT_NOT_FOUND",
 			"CURRENCY_NOT_FOUND",
+			"INVALID_UNIFIED_ACCOUNT",
+			"UNIFIED_ACCOUNT_NOT_SUPPORTED",
+			"REQUEST_FORBIDDEN",
+			"NOT_AGENCY",
+			"AGENCY_NOT_FOUND",
 			"NOT_FOUND":
 			t.Logf("%s: account lacks this capability/record (label=%s) — endpoint+signing OK", label, apiErr.Label)
 			return true

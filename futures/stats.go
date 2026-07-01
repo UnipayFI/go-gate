@@ -85,18 +85,24 @@ func (s *ListContractStatsService) Do(ctx context.Context) ([]ContractStat, erro
 }
 
 // ContractStat is one sampling interval of a contract's trading statistics.
+//
+// Size fields are contract counts, but for enable_decimal contracts (e.g.
+// ETH_USDT) the live API returns them as fractional numbers (e.g.
+// "long_liq_size":280.8), so they are decoded as decimal.Decimal rather than
+// int64. Only the account/user counters stay int64. The *_account / lsr fields
+// are ratios and remain decimal.
 type ContractStat struct {
 	Time            time.Time       `json:"time,format:unix"`
 	LsrTaker        decimal.Decimal `json:"lsr_taker"`
 	LsrAccount      decimal.Decimal `json:"lsr_account"`
-	LongLiqSize     int64           `json:"long_liq_size"`
-	ShortLiqSize    int64           `json:"short_liq_size"`
-	OpenInterest    int64           `json:"open_interest"`
+	LongLiqSize     decimal.Decimal `json:"long_liq_size"`
+	ShortLiqSize    decimal.Decimal `json:"short_liq_size"`
+	OpenInterest    decimal.Decimal `json:"open_interest"`
 	ShortLiqUSD     decimal.Decimal `json:"short_liq_usd"`
 	MarkPrice       decimal.Decimal `json:"mark_price"`
 	TopLsrSize      decimal.Decimal `json:"top_lsr_size"`
-	TopLongSize     int64           `json:"top_long_size"`
-	TopShortSize    int64           `json:"top_short_size"`
+	TopLongSize     decimal.Decimal `json:"top_long_size"`
+	TopShortSize    decimal.Decimal `json:"top_short_size"`
 	ShortLiqAmount  decimal.Decimal `json:"short_liq_amount"`
 	LongLiqAmount   decimal.Decimal `json:"long_liq_amount"`
 	ShortLiqUSDNew  decimal.Decimal `json:"short_liq_usd_new"`
@@ -106,8 +112,8 @@ type ContractStat struct {
 	TopLongAccount  int64           `json:"top_long_account"`
 	TopShortAccount int64           `json:"top_short_account"`
 	LongLiqUSD      decimal.Decimal `json:"long_liq_usd"`
-	LongTakerSize   int64           `json:"long_taker_size"`
-	ShortTakerSize  int64           `json:"short_taker_size"`
+	LongTakerSize   decimal.Decimal `json:"long_taker_size"`
+	ShortTakerSize  decimal.Decimal `json:"short_taker_size"`
 	LongUsers       int64           `json:"long_users"`
 	ShortUsers      int64           `json:"short_users"`
 }
