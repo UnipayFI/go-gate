@@ -103,7 +103,8 @@ func (s *ListPositionsService) SetHolding(holding bool) *ListPositionsService {
 	return s
 }
 
-// SetLimit caps the number of records returned.
+// SetLimit caps the number of records returned; valid values are 1-100. When
+// unset, there is no default and the full current position list is returned.
 func (s *ListPositionsService) SetLimit(limit int) *ListPositionsService {
 	s.params["limit"] = strconv.Itoa(limit)
 	return s
