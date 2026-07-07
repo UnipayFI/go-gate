@@ -8,7 +8,7 @@ A Go SDK for the [Gate.com](https://www.gate.com/docs/developers/apiv4/en/) (Gat
 
 | Area | API | Aligned to | Version |
 |---|---|---|---|
-| REST + WebSocket | `/api/v4` | 2026-07-02 | [v4.106.104](https://www.gate.com/docs/developers/apiv4/en/#changelog) |
+| REST + WebSocket | `/api/v4` | 2026-07-06 | [v4.106.105](https://www.gate.com/docs/developers/apiv4/en/#changelog) |
 
 Response structs are reconciled against the **live API** (not just the docs), so fields stay in sync — the SDK adds keys the official spec still omits (e.g. `rpi_maker_fee`, futures position vouchers, `market_cap`).
 
@@ -136,18 +136,23 @@ Each `Do` returns `(done chan<- struct{}, stop <-chan struct{}, err error)`: clo
 | Package | Scope |
 |---------|-------|
 | `spot` | currencies, currency-pairs, tickers, order book, trades, candlesticks, fee, accounts, account-book, orders (single/batch/amend/cancel/countdown), my-trades, price-triggered orders + spot WebSocket |
-| `futures` | contracts, order book, trades, candlesticks, premium index, tickers, funding rate, insurance, contract stats, index constituents, liq orders, risk-limit tiers, accounts, positions (single + dual-mode), orders (single/batch/amend/price-triggered), my-trades + futures WebSocket |
+| `futures` | contracts (+delisted), order book, trades, candlesticks, premium index, tickers, funding rate (single + batch), insurance, contract stats, index constituents, liq orders, risk-limit tiers, accounts, positions (single + dual-mode + history + split-mode leverage), position mode, orders (single/batch/amend/price-triggered/BBO), trailing & chase auto-orders, my-trades + futures WebSocket |
 | `delivery` | dated-futures market, accounts, positions, orders, settlements, risk-limit tiers, price-triggered orders + delivery WebSocket |
 | `options` | underlyings, expirations, contracts, settlements, order book, tickers, candlesticks, trades, accounts, positions, orders, MMP |
 | `margin` | isolated + cross margin, funding accounts, auto-repay, margin tiers, unified-margin (uni) lending |
-| `unified` | unified account, borrow/repay, transferables, risk units, mode, leverage config, discount tiers, portfolio calculator |
+| `unified` | unified account, borrow/repay, quick-repayment, transferables, risk units, mode, delta-neutral mode, leverage config, discount tiers, portfolio calculator |
 | `wallet` | deposit address, transfers, sub-account transfers, deposits/withdrawals, balances, trade fee, total balance, dust conversion, **withdrawals** |
-| `account` | account detail, rate limit, STP groups, debit fee |
+| `account` | account detail, rate limit, STP groups, debit fee, main-account API keys |
 | `subaccount` | sub-account create/query, API keys, lock/unlock |
-| `earn` | dual investment, structured products, ETH2 staking, uni lending |
+| `earn` | dual investment (+ balance / refund / reinvest), structured products, staking (ETH2 + on-chain assets / awards / orders), auto-invest plans, fixed-term products & subscriptions, uni lending |
 | `loan` | collateral loan + multi-collateral loan |
 | `flashswap` | flash-swap currency pairs, preview, orders |
-| `rebate` | agency / partner / broker commission & transaction history |
+| `rebate` | agency / partner / broker commission & transaction history, partner applications / eligibility |
+| `crossex` | cross-exchange margin & contract trading: accounts, orders, positions & leverage, transfers, convert (flash-swap), rules & fees |
+| `tradfi` | TradFi CFDs via MT5: symbols / categories / klines / tickers, orders, positions, user & MT5 account, fund transactions |
+| `p2p` | P2P merchant API: account & payment methods, ads, transactions, chat |
+| `otc` | OTC fiat & stablecoin conversion + bank-card management |
+| `bot` | strategy bots: spot / futures / margin / infinite grid, spot / contract martingale, portfolio management, AIHub recommendations |
 
 ## Testing
 
@@ -167,6 +172,7 @@ GATE_TEST_WRITE=1 go test ./spot/ -run TestSpotOrder  # live order tests (tiny, 
 
 ## CHANGE_LOG
 
+- **2026-07-07** — Aligned to v4.106.105. Added five new product packages — `crossex` (cross-exchange margin & contracts), `tradfi` (MT5 stock/forex CFDs), `p2p` (P2P merchant API), `otc` (OTC fiat/stablecoin + bank cards) and `bot` (grid/martingale strategy bots) — plus extensions across existing products: futures trailing & chase auto-orders, BBO orders, split-mode leverage / position mode, `contracts_all`, batch funding rates and positions-timerange; earn auto-invest, fixed-term and dual/staking additions; unified delta-neutral & quick-repayment; rebate partner endpoints; `account/main_keys`; `wallet/getLowCapExchangeList`; options order amend. 150 endpoints added (415 official endpoints now fully covered). Public and account-reachable endpoints reconciled against the live API; capability-gated products (crossex/tradfi/p2p/otc) verified for endpoint + signing correctness.
 - **2026-07-01** — Initial release. Full Gate APIv4 coverage: all REST products (spot, futures, delivery, options, margin, unified, wallet, account, sub-account, earn, loan, flash-swap, rebate) and spot/futures/delivery WebSocket public + private channels. Every public and private endpoint reconciled against the live API; order lifecycle (spot + futures, REST + WebSocket) verified with live trades.
 
 ## License

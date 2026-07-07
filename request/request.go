@@ -106,6 +106,16 @@ func (r *Request) SetQuery(key, value string) *Request {
 	return r
 }
 
+// SetHeader sets an arbitrary request header (e.g. X-Gate-Exptime for the
+// self-expiring BBO/order endpoints). It is applied verbatim to the wire and is
+// not part of the signature prehash. Empty values are ignored.
+func (r *Request) SetHeader(key, value string) *Request {
+	if value != "" {
+		r.r.SetHeader(key, value)
+	}
+	return r
+}
+
 // SetBody overrides the request body with an arbitrary JSON-serializable value
 // (used for batch endpoints whose body is an array or a nested struct rather
 // than a flat map). The value is marshaled once and reused for signing.

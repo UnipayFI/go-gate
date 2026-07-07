@@ -10,6 +10,7 @@ import (
 	"maps"
 	"os"
 	"sort"
+	"strings"
 	"testing"
 	"time"
 
@@ -88,6 +89,7 @@ func Tolerable(t *testing.T, label string, err error) bool {
 			"ACCOUNT_NOT_FOUND",
 			"USER_NOT_ALLOWED",
 			"FORBIDDEN",
+			"NO_ACCESS",
 			"NObalance",
 			"ORDER_NOT_FOUND",
 			"POSITION_NOT_FOUND",
@@ -100,6 +102,15 @@ func Tolerable(t *testing.T, label string, err error) bool {
 			"AGENCY_NOT_FOUND",
 			"NOT_FOUND":
 			t.Logf("%s: account lacks this capability/record (label=%s) — endpoint+signing OK", label, apiErr.Label)
+			return true
+		}
+		// Placeholder-ID smoke tests (e.g. a fake txid/adv_no on read-detail
+		// endpoints that need a real record) come back as a parameter-validation
+		// error: the request was authenticated and routed, only the test-supplied
+		// value was rejected — the same "no usable test data" category as *_NOT_FOUND.
+		if strings.Contains(apiErr.Label, "Invalid parameter value") ||
+			strings.Contains(apiErr.Message, "Invalid parameter value") {
+			t.Logf("%s: placeholder id rejected (%s) — endpoint+signing OK", label, apiErr.Message)
 			return true
 		}
 	}

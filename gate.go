@@ -19,6 +19,11 @@
 //   - loan        — /api/v4/loan/*      (collateral + multi-collateral)
 //   - flashswap   — /api/v4/flash_swap/*
 //   - rebate      — /api/v4/rebate/*
+//   - crossex     — /api/v4/crossex/*   (cross-exchange margin & contracts)
+//   - tradfi      — /api/v4/tradfi/*    (MT5 stock / forex CFDs)
+//   - p2p         — /api/v4/p2p/*       (P2P merchant API)
+//   - otc         — /api/v4/otc/*       (OTC fiat / stablecoin conversion)
+//   - bot         — /api/v4/bot/*       (grid / martingale strategy bots)
 //
 // Authentication uses Gate's APIv4 scheme (KEY / SIGN / Timestamp headers,
 // HMAC-SHA512 over method\npath\nquery\nSHA512(body)\ntimestamp); the shared
@@ -38,7 +43,9 @@ package gate
 
 import (
 	"github.com/UnipayFI/go-gate/v4/account"
+	"github.com/UnipayFI/go-gate/v4/bot"
 	"github.com/UnipayFI/go-gate/v4/client"
+	"github.com/UnipayFI/go-gate/v4/crossex"
 	"github.com/UnipayFI/go-gate/v4/delivery"
 	"github.com/UnipayFI/go-gate/v4/earn"
 	"github.com/UnipayFI/go-gate/v4/flashswap"
@@ -46,9 +53,12 @@ import (
 	"github.com/UnipayFI/go-gate/v4/loan"
 	"github.com/UnipayFI/go-gate/v4/margin"
 	"github.com/UnipayFI/go-gate/v4/options"
+	"github.com/UnipayFI/go-gate/v4/otc"
+	"github.com/UnipayFI/go-gate/v4/p2p"
 	"github.com/UnipayFI/go-gate/v4/rebate"
 	"github.com/UnipayFI/go-gate/v4/spot"
 	"github.com/UnipayFI/go-gate/v4/subaccount"
+	"github.com/UnipayFI/go-gate/v4/tradfi"
 	"github.com/UnipayFI/go-gate/v4/unified"
 	"github.com/UnipayFI/go-gate/v4/wallet"
 )
@@ -119,6 +129,32 @@ func NewFlashSwapClient(opts ...client.Options) *flashswap.FlashSwapClient {
 // NewRebateClient constructs a rebate REST client.
 func NewRebateClient(opts ...client.Options) *rebate.RebateClient {
 	return rebate.NewRebateClient(opts...)
+}
+
+// NewCrossexClient constructs a Cross-Exchange (cross-venue margin & contract)
+// REST client.
+func NewCrossexClient(opts ...client.Options) *crossex.CrossexClient {
+	return crossex.NewCrossexClient(opts...)
+}
+
+// NewTradfiClient constructs a TradFi (MT5-backed stock / forex CFD) REST client.
+func NewTradfiClient(opts ...client.Options) *tradfi.TradfiClient {
+	return tradfi.NewTradfiClient(opts...)
+}
+
+// NewP2PClient constructs a P2P merchant REST client.
+func NewP2PClient(opts ...client.Options) *p2p.P2PClient {
+	return p2p.NewP2PClient(opts...)
+}
+
+// NewOTCClient constructs an OTC fiat / stablecoin conversion REST client.
+func NewOTCClient(opts ...client.Options) *otc.OTCClient {
+	return otc.NewOTCClient(opts...)
+}
+
+// NewBotClient constructs a strategy-bot (grid / martingale) REST client.
+func NewBotClient(opts ...client.Options) *bot.BotClient {
+	return bot.NewBotClient(opts...)
 }
 
 // --- WebSocket clients ---
