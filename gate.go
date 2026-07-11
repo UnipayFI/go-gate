@@ -21,6 +21,7 @@
 //   - rebate      — /api/v4/rebate/*
 //   - crossex     — /api/v4/crossex/*   (cross-exchange margin & contracts)
 //   - tradfi      — /api/v4/tradfi/*    (MT5 stock / forex CFDs)
+//   - stock       — /api/v4/stock/*     (traditional-finance stock spot)
 //   - p2p         — /api/v4/p2p/*       (P2P merchant API)
 //   - otc         — /api/v4/otc/*       (OTC fiat / stablecoin conversion)
 //   - bot         — /api/v4/bot/*       (grid / martingale strategy bots)
@@ -57,6 +58,7 @@ import (
 	"github.com/UnipayFI/go-gate/v4/p2p"
 	"github.com/UnipayFI/go-gate/v4/rebate"
 	"github.com/UnipayFI/go-gate/v4/spot"
+	"github.com/UnipayFI/go-gate/v4/stock"
 	"github.com/UnipayFI/go-gate/v4/subaccount"
 	"github.com/UnipayFI/go-gate/v4/tradfi"
 	"github.com/UnipayFI/go-gate/v4/unified"
@@ -140,6 +142,11 @@ func NewCrossexClient(opts ...client.Options) *crossex.CrossexClient {
 // NewTradfiClient constructs a TradFi (MT5-backed stock / forex CFD) REST client.
 func NewTradfiClient(opts ...client.Options) *tradfi.TradfiClient {
 	return tradfi.NewTradfiClient(opts...)
+}
+
+// NewStockClient constructs a Stock (traditional-finance stock spot) REST client.
+func NewStockClient(opts ...client.Options) *stock.StockClient {
+	return stock.NewStockClient(opts...)
 }
 
 // NewP2PClient constructs a P2P merchant REST client.
