@@ -272,7 +272,8 @@ func (s *GetADLRankService) Do(ctx context.Context) (*CrossexADLRank, error) {
 	return request.Do[CrossexADLRank](req)
 }
 
-// CrossexADLRank is the ADL reduction ranking for a trading pair.
+// CrossexADLRank is the ADL reduction ranking for a trading pair. The rank
+// values are quartile buckets: 20, 40 (Kraken), 80 and 100.
 type CrossexADLRank struct {
 	UserID          string `json:"user_id"`
 	Symbol          string `json:"symbol"`

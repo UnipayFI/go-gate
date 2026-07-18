@@ -330,6 +330,49 @@ func (s *ListHistoryTradesService) Do(ctx context.Context) ([]CrossexTrade, erro
 	return *resp, nil
 }
 
+// CancelOrderReq identifies a single order to cancel in a batch request. An
+// order may be targeted by order_id or by custom text; when both are set,
+// order_id takes precedence.
+type CancelOrderReq struct {
+	OrderID string `json:"order_id,omitempty"`
+	Text    string `json:"text,omitempty"`
+}
+
+// CancelBatchOrdersService -- POST /api/v4/crossex/batch_cancel_orders (private)
+//
+// Cancels multiple cross-exchange orders in one request. Each item targets an
+// order by order_id or by custom text; when both are set on an item, order_id
+// takes precedence. Each result reports whether the cancel was accepted along
+// with any error label and message.
+type CancelBatchOrdersService struct {
+	c    *CrossexClient
+	reqs []CancelOrderReq
+}
+
+func (c *CrossexClient) NewCancelBatchOrdersService(reqs ...CancelOrderReq) *CancelBatchOrdersService {
+	return &CancelBatchOrdersService{c: c, reqs: reqs}
+}
+
+func (s *CancelBatchOrdersService) Do(ctx context.Context) ([]CrossexCancelResult, error) {
+	req := request.Post(ctx, s.c, "/api/v4/crossex/batch_cancel_orders").WithSign().SetBody(s.reqs)
+	resp, err := request.Do[[]CrossexCancelResult](req)
+	if err != nil {
+		return nil, err
+	}
+	return *resp, nil
+}
+
+// CrossexCancelResult is one element of a batch_cancel_orders response. Accepted
+// is a string ("true" or "false"), matching the Gate wire format; on failure
+// Label and Message describe the reason.
+type CrossexCancelResult struct {
+	OrderID  string `json:"order_id"`
+	Text     string `json:"text"`
+	Accepted string `json:"accepted"`
+	Label    string `json:"label"`
+	Message  string `json:"message"`
+}
+
 // CrossexTrade is one cross-exchange trade fill. create_time is a millisecond
 // Unix timestamp.
 type CrossexTrade struct {
