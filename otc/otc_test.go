@@ -175,10 +175,10 @@ func TestOTC(t *testing.T) {
 		if err := c.SyncServerTime(cx); err != nil {
 			t.Fatalf("sync time: %v", err)
 		}
-		_, err := c.NewCreateStableCoinOrderService().
-			SetPayCoin("USD").SetGetCoin("USDT").
-			SetPayAmount(decimal.NewFromFloat(0.00000001)).
-			SetQuoteToken("invalid-quote-token").Do(cx)
+		_, err := c.NewCreateStableCoinOrderService(
+			"USD", "USDT",
+			decimal.NewFromFloat(0.00000001), decimal.NewFromFloat(0.00000001),
+			"PAY", "invalid-quote-token").Do(cx)
 		if err != nil {
 			t.Logf("create stablecoin order: %v (tolerable)", err)
 			return

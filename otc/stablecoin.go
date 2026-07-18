@@ -10,58 +10,29 @@ import (
 
 // CreateStableCoinOrderService -- POST /api/v4/otc/stable_coin/order/create (private)
 //
-// Creates a stablecoin OTC order. Every field is optional on the wire; pay_coin /
-// get_coin, one of the amounts, side and quote_token typically come from a prior
-// stablecoin quote.
+// Creates a stablecoin OTC order. All fields except promotion_code are required;
+// pay_coin / get_coin, the amounts, side and quote_token come from a prior
+// stablecoin quote. side accepts "PAY"/"GET" for backward compatibility, but new
+// integrations should pass the value returned by the quote response.
 type CreateStableCoinOrderService struct {
 	c    *OTCClient
 	body map[string]any
 }
 
-func (c *OTCClient) NewCreateStableCoinOrderService() *CreateStableCoinOrderService {
-	return &CreateStableCoinOrderService{c: c, body: map[string]any{}}
-}
-
-// SetPayCoin sets the currency the user pays.
-func (s *CreateStableCoinOrderService) SetPayCoin(payCoin string) *CreateStableCoinOrderService {
-	s.body["pay_coin"] = payCoin
-	return s
-}
-
-// SetGetCoin sets the currency the user receives.
-func (s *CreateStableCoinOrderService) SetGetCoin(getCoin string) *CreateStableCoinOrderService {
-	s.body["get_coin"] = getCoin
-	return s
-}
-
-// SetPayAmount sets the amount of the currency the user pays.
-func (s *CreateStableCoinOrderService) SetPayAmount(payAmount decimal.Decimal) *CreateStableCoinOrderService {
-	s.body["pay_amount"] = payAmount.String()
-	return s
-}
-
-// SetGetAmount sets the amount of the currency the user receives.
-func (s *CreateStableCoinOrderService) SetGetAmount(getAmount decimal.Decimal) *CreateStableCoinOrderService {
-	s.body["get_amount"] = getAmount.String()
-	return s
-}
-
-// SetSide sets the quote direction returned by the quote endpoint (used for
-// order validation).
-func (s *CreateStableCoinOrderService) SetSide(side string) *CreateStableCoinOrderService {
-	s.body["side"] = side
-	return s
+func (c *OTCClient) NewCreateStableCoinOrderService(payCoin, getCoin string, payAmount, getAmount decimal.Decimal, side, quoteToken string) *CreateStableCoinOrderService {
+	return &CreateStableCoinOrderService{c: c, body: map[string]any{
+		"pay_coin":    payCoin,
+		"get_coin":    getCoin,
+		"pay_amount":  payAmount.String(),
+		"get_amount":  getAmount.String(),
+		"side":        side,
+		"quote_token": quoteToken,
+	}}
 }
 
 // SetPromotionCode attaches an optional promotion code to the order.
 func (s *CreateStableCoinOrderService) SetPromotionCode(promotionCode string) *CreateStableCoinOrderService {
 	s.body["promotion_code"] = promotionCode
-	return s
-}
-
-// SetQuoteToken sets the quote token returned by the quote endpoint.
-func (s *CreateStableCoinOrderService) SetQuoteToken(quoteToken string) *CreateStableCoinOrderService {
-	s.body["quote_token"] = quoteToken
 	return s
 }
 
@@ -71,10 +42,11 @@ func (s *CreateStableCoinOrderService) Do(ctx context.Context) (*OTCStableCoinOr
 }
 
 // OTCStableCoinOrderCreateResponse is the acknowledgement envelope returned when
-// creating a stablecoin order.
+// creating a stablecoin order. Timestamp is the server Unix time in seconds.
 type OTCStableCoinOrderCreateResponse struct {
-	Code    int    `json:"code"`
-	Message string `json:"message"`
+	Code      int    `json:"code"`
+	Message   string `json:"message"`
+	Timestamp int64  `json:"timestamp"`
 }
 
 // ListStableCoinOrdersService -- GET /api/v4/otc/stable_coin/order/list (private)
@@ -154,8 +126,10 @@ type OTCStableCoinOrderListItem struct {
 	ID           int64           `json:"id"`
 	TradeNo      string          `json:"trade_no"`
 	PayCoin      string          `json:"pay_coin"`
+	PayIcon      string          `json:"pay_icon"`
 	PayAmount    decimal.Decimal `json:"pay_amount"`
 	GetCoin      string          `json:"get_coin"`
+	GetIcon      string          `json:"get_icon"`
 	GetAmount    decimal.Decimal `json:"get_amount"`
 	Rate         decimal.Decimal `json:"rate"`
 	RateReci     decimal.Decimal `json:"rate_reci"`

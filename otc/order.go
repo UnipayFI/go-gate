@@ -139,7 +139,8 @@ func (s *ListOrdersService) SetEndTime(endTime string) *ListOrdersService {
 	return s
 }
 
-// SetStatus narrows the result to a single order status (e.g. "DONE").
+// SetStatus narrows the result to a single order status ("DONE", "CANCEL",
+// "PROCESSING" or "DISBURSED").
 func (s *ListOrdersService) SetStatus(status string) *ListOrdersService {
 	s.params["status"] = status
 	return s
@@ -181,24 +182,20 @@ type OTCOrderList struct {
 // OTCOrderListItem is a single fiat OTC order in a list. time is a formatted
 // datetime string; timestamp is its integer epoch counterpart.
 type OTCOrderListItem struct {
-	Time                string          `json:"time"`
-	Timestamp           int64           `json:"timestamp"`
-	OrderID             string          `json:"order_id"`
-	TradeNo             string          `json:"trade_no"`
-	Type                string          `json:"type"`
-	Status              string          `json:"status"`
-	DBStatus            string          `json:"db_status"`
-	FiatCurrency        string          `json:"fiat_currency"`
-	FiatCurrencyInfo    OTCCurrencyInfo `json:"fiat_currency_info"`
-	FiatAmount          decimal.Decimal `json:"fiat_amount"`
-	CryptoCurrency      string          `json:"crypto_currency"`
-	CryptoCurrencyInfo  OTCCurrencyInfo `json:"crypto_currency_info"`
-	CryptoAmount        decimal.Decimal `json:"crypto_amount"`
-	Rate                decimal.Decimal `json:"rate"`
-	TransferRemark      string          `json:"transfer_remark"`
-	ReferenceCode       string          `json:"reference_code"`
-	GateBankAccountIBAN string          `json:"gate_bank_account_iban"`
-	PromotionCode       string          `json:"promotion_code"`
+	Time               string          `json:"time"`
+	Timestamp          int64           `json:"timestamp"`
+	OrderID            string          `json:"order_id"`
+	TradeNo            string          `json:"trade_no"`
+	Type               string          `json:"type"`
+	Status             string          `json:"status"`
+	FiatCurrency       string          `json:"fiat_currency"`
+	FiatCurrencyInfo   OTCCurrencyInfo `json:"fiat_currency_info"`
+	FiatAmount         decimal.Decimal `json:"fiat_amount"`
+	CryptoCurrency     string          `json:"crypto_currency"`
+	CryptoCurrencyInfo OTCCurrencyInfo `json:"crypto_currency_info"`
+	CryptoAmount       decimal.Decimal `json:"crypto_amount"`
+	Rate               decimal.Decimal `json:"rate"`
+	PromotionCode      string          `json:"promotion_code"`
 }
 
 // OTCCurrencyInfo is the display metadata (name and icon) for a currency.
@@ -226,15 +223,18 @@ func (s *GetOrderDetailService) Do(ctx context.Context) (*OTCOrderDetailResponse
 	return request.Do[OTCOrderDetailResponse](req)
 }
 
-// OTCOrderDetailResponse is the envelope returned by the fiat order detail endpoint.
+// OTCOrderDetailResponse is the envelope returned by the fiat order detail
+// endpoint. Timestamp is the server Unix time in seconds.
 type OTCOrderDetailResponse struct {
-	Code    int            `json:"code"`
-	Message string         `json:"message"`
-	Data    OTCOrderDetail `json:"data"`
+	Code      int            `json:"code"`
+	Message   string         `json:"message"`
+	Data      OTCOrderDetail `json:"data"`
+	Timestamp int64          `json:"timestamp"`
 }
 
 // OTCOrderDetail is the full detail of a fiat OTC order. create_time is a
-// formatted datetime string.
+// formatted datetime string. The bank_* fields carry the user's own bank
+// transfer details and the gate_* fields carry Gate's receiving-bank details.
 type OTCOrderDetail struct {
 	OrderID        string          `json:"order_id"`
 	UID            string          `json:"uid"`
@@ -244,13 +244,34 @@ type OTCOrderDetail struct {
 	CryptoCurrency string          `json:"crypto_currency"`
 	CryptoAmount   decimal.Decimal `json:"crypto_amount"`
 	Rate           decimal.Decimal `json:"rate"`
-	TransferRemark string          `json:"transfer_remark"`
-	ReferenceCode  string          `json:"reference_code"`
-	Status         string          `json:"status"`
-	DBStatus       string          `json:"db_status"`
-	CreateTime     string          `json:"create_time"`
-	Memo           string          `json:"memo"`
-	Side           string          `json:"side"`
-	PromotionCode  string          `json:"promotion_code"`
-	TradeNo        string          `json:"trade_no"`
+
+	BankAccountName           string `json:"bank_account_name"`
+	BankName                  string `json:"bank_name"`
+	BankCountry               string `json:"bank_country"`
+	BankAddress               string `json:"bank_address"`
+	BankAccountNumberIBAN     string `json:"bank_account_number_iban"`
+	SwiftCode                 string `json:"swift_code"`
+	IntermediateBankName      string `json:"intermediate_bank_name"`
+	IntermediaryBankSwiftCode string `json:"intermediary_bank_swift_code"`
+
+	GateBankAccountName           string `json:"gate_bank_account_name"`
+	GateBankName                  string `json:"gate_bank_name"`
+	GateBankCountry               string `json:"gate_bank_country"`
+	GateBankAddress               string `json:"gate_bank_address"`
+	GateBankAccountNumberIBAN     string `json:"gate_bank_account_number_iban"`
+	GateSwiftCode                 string `json:"gate_swift_code"`
+	GateIntermediaryBankName      string `json:"gate_intermediary_bank_name"`
+	GateIntermediaryBankSwiftCode string `json:"gate_intermediary_bank_swift_code"`
+	GateTransferRemark            string `json:"gate_transfer_remark"`
+	GateReferenceCode             string `json:"gate_reference_code"`
+
+	TransferRemark string `json:"transfer_remark"`
+	ReferenceCode  string `json:"reference_code"`
+	Status         string `json:"status"`
+	DBStatus       string `json:"db_status"`
+	CreateTime     string `json:"create_time"`
+	Memo           string `json:"memo"`
+	Side           string `json:"side"`
+	PromotionCode  string `json:"promotion_code"`
+	TradeNo        string `json:"trade_no"`
 }

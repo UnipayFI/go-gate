@@ -54,24 +54,31 @@ func (s *QuoteService) Do(ctx context.Context) (*OTCQuoteResponse, error) {
 	return request.Do[OTCQuoteResponse](req)
 }
 
-// OTCQuoteResponse is the envelope returned by the OTC quote endpoint.
+// OTCQuoteResponse is the envelope returned by the OTC quote endpoint. Timestamp
+// is the server Unix time in seconds.
 type OTCQuoteResponse struct {
-	Code    int      `json:"code"`
-	Message string   `json:"message"`
-	Data    OTCQuote `json:"data"`
+	Code      int      `json:"code"`
+	Message   string   `json:"message"`
+	Data      OTCQuote `json:"data"`
+	Timestamp int64    `json:"timestamp"`
 }
 
 // OTCQuote is a single fiat/stablecoin quote and its exchange terms.
+// validity_period is the quote lifetime in seconds; refresh_limit caps how many
+// times the quote may be refreshed.
 type OTCQuote struct {
-	Type          string          `json:"type"`
-	PayCoin       string          `json:"pay_coin"`
-	GetCoin       string          `json:"get_coin"`
-	PayAmount     decimal.Decimal `json:"pay_amount"`
-	GetAmount     decimal.Decimal `json:"get_amount"`
-	Rate          decimal.Decimal `json:"rate"`
-	RateReci      decimal.Decimal `json:"rate_reci"`
-	PromotionCode string          `json:"promotion_code"`
-	Side          string          `json:"side"`
-	OrderType     string          `json:"order_type"`
-	QuoteToken    string          `json:"quote_token"`
+	Type            string          `json:"type"`
+	PayCoin         string          `json:"pay_coin"`
+	GetCoin         string          `json:"get_coin"`
+	PayAmount       decimal.Decimal `json:"pay_amount"`
+	GetAmount       decimal.Decimal `json:"get_amount"`
+	Rate            decimal.Decimal `json:"rate"`
+	RateReci        decimal.Decimal `json:"rate_reci"`
+	PromotionCode   string          `json:"promotion_code"`
+	Side            string          `json:"side"`
+	OrderType       string          `json:"order_type"`
+	QuoteToken      string          `json:"quote_token"`
+	ValidityPeriod  string          `json:"validity_period"`
+	RefreshLimit    int             `json:"refresh_limit"`
+	RefreshLimitMsg string          `json:"refresh_limit_msg"`
 }

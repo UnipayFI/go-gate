@@ -40,26 +40,20 @@ type OTCBankList struct {
 // the default and 0 otherwise; submit_time / update_time are formatted datetime
 // strings.
 type OTCBankListItem struct {
-	ID                      string `json:"id"`
-	BankAccountName         string `json:"bank_account_name"`
-	BankName                string `json:"bank_name"`
-	BankCountry             string `json:"bank_country"`
-	BankAddress             string `json:"bank_address"`
-	BankCode                string `json:"bank_code"`
-	BranchCode              string `json:"branch_code"`
-	IBAN                    string `json:"iban"`
-	Swift                   string `json:"swift"`
-	RemittanceLineNumber    string `json:"remittance_line_number"`
-	AgentBankName           string `json:"agent_bank_name"`
-	AgentBankSwift          string `json:"agent_bank_swift"`
-	SubmitTime              string `json:"submit_time"`
-	UpdateTime              string `json:"update_time"`
-	Status                  string `json:"status"`
-	DocumentationFileType   string `json:"documentation_file_type"`
-	Memo                    string `json:"memo"`
-	IsDefault               int    `json:"is_default"`
-	BankID                  string `json:"bank_id"`
-	DocumentationFileKeyURL string `json:"documentation_file_key_url"`
+	ID                   string `json:"id"`
+	BankAccountName      string `json:"bank_account_name"`
+	BankName             string `json:"bank_name"`
+	BankCountry          string `json:"bank_country"`
+	BankAddress          string `json:"bank_address"`
+	IBAN                 string `json:"iban"`
+	Swift                string `json:"swift"`
+	RemittanceLineNumber string `json:"remittance_line_number"`
+	AgentBankName        string `json:"agent_bank_name"`
+	AgentBankSwift       string `json:"agent_bank_swift"`
+	SubmitTime           string `json:"submit_time"`
+	UpdateTime           string `json:"update_time"`
+	Status               string `json:"status"`
+	IsDefault            int    `json:"is_default"`
 }
 
 // CreateBankService -- POST /api/v4/otc/bank/create (private)
@@ -193,13 +187,10 @@ type OTCBankSupplementChecklist struct {
 	Timestamp int64                            `json:"timestamp"`
 }
 
-// OTCBankSupplementChecklistItem is one required material in the checklist. code
-// is the material item code (the top-level key of relationship_proof).
+// OTCBankSupplementChecklistItem is one required material in the checklist,
+// described by a human-readable text.
 type OTCBankSupplementChecklistItem struct {
-	Code     string `json:"code"`
-	Zh       string `json:"zh"`
-	En       string `json:"en"`
-	Required bool   `json:"required"`
+	Description string `json:"description"`
 }
 
 // SubmitPersonalBankSupplementService -- POST /api/v4/otc/bank/personal/bank_supplement (private)
