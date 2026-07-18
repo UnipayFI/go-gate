@@ -8,7 +8,7 @@ A Go SDK for the [Gate.com](https://www.gate.com/docs/developers/apiv4/en/) (Gat
 
 | Area | API | Aligned to | Version |
 |---|---|---|---|
-| REST + WebSocket | `/api/v4` | 2026-07-08 | [v4.106.106](https://www.gate.com/docs/developers/apiv4/en/#changelog) |
+| REST + WebSocket | `/api/v4` | 2026-07-16 | [v4.106.108](https://www.gate.com/docs/developers/apiv4/en/#changelog) |
 
 Response structs are reconciled against the **live API** (not just the docs), so fields stay in sync — the SDK adds keys the official spec still omits (e.g. `rpi_maker_fee`, futures position vouchers, `market_cap`).
 
