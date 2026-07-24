@@ -624,6 +624,37 @@ func (s *SetUserLeverageCurrencySettingService) Do(ctx context.Context) error {
 	return err
 }
 
+// SetUserLeverageService -- POST /api/v4/unified/leverage/user_setting (private)
+//
+// Sets the leverage for all of the user's borrowed currencies. Currencies with
+// outstanding loans cannot be changed; a value above a currency's leverage limit
+// is capped at that limit. Failures are not rolled back and affect only the
+// currencies that failed — Do returns the currencies whose update failed together
+// with the reason.
+type SetUserLeverageService struct {
+	c    *UnifiedClient
+	body map[string]any
+}
+
+func (c *UnifiedClient) NewSetUserLeverageService(leverage string) *SetUserLeverageService {
+	return &SetUserLeverageService{c: c, body: map[string]any{"leverage": leverage}}
+}
+
+func (s *SetUserLeverageService) Do(ctx context.Context) ([]LeverageFailedCurrency, error) {
+	req := request.Post(ctx, s.c, "/api/v4/unified/leverage/user_setting", s.body).WithSign()
+	resp, err := request.Do[[]LeverageFailedCurrency](req)
+	if err != nil {
+		return nil, err
+	}
+	return *resp, nil
+}
+
+// LeverageFailedCurrency is a currency whose leverage update failed, with the reason.
+type LeverageFailedCurrency struct {
+	Currency string `json:"currency"`
+	Reason   string `json:"reason"`
+}
+
 // ListUnifiedCurrenciesService -- GET /api/v4/unified/currencies
 //
 // Returns the currencies the unified account can borrow and their borrow limits.
