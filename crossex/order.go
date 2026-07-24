@@ -37,7 +37,7 @@ func (s *CreateOrderService) SetType(orderType string) *CreateOrderService {
 	return s
 }
 
-// SetTimeInForce sets the time in force (GTC default, IOC, FOK, POC).
+// SetTimeInForce sets the time in force (GTC default, IOC, FOK, POC, RPI).
 func (s *CreateOrderService) SetTimeInForce(tif string) *CreateOrderService {
 	s.body["time_in_force"] = tif
 	return s

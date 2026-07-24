@@ -54,6 +54,9 @@ type CrossexSymbol struct {
 	LiquidationFee  decimal.Decimal `json:"liquidation_fee"`
 	DefaultLeverage decimal.Decimal `json:"default_leverage"`
 	DelistTime      time.Time       `json:"delist_time,string,format:unixmilli"`
+	// SupportRPI reports whether the symbol supports RPI order placement
+	// ("true" if supported, "false" otherwise).
+	SupportRPI string `json:"support_rpi"`
 }
 
 // QueryRiskLimitsService -- GET /api/v4/crossex/rule/risk_limits (private)
@@ -160,12 +163,14 @@ func (s *GetFeeService) Do(ctx context.Context) ([]CrossexFee, error) {
 // CrossexFee is the maker/taker fee rates for one venue, plus any per-symbol
 // special fee overrides.
 type CrossexFee struct {
-	ExchangeType   string              `json:"exchange_type"`
-	SpotMakerFee   decimal.Decimal     `json:"spot_maker_fee"`
-	SpotTakerFee   decimal.Decimal     `json:"spot_taker_fee"`
-	FutureMakerFee decimal.Decimal     `json:"future_maker_fee"`
-	FutureTakerFee decimal.Decimal     `json:"future_taker_fee"`
-	SpecialFeeList []CrossexSpecialFee `json:"special_fee_list"`
+	ExchangeType      string              `json:"exchange_type"`
+	SpotMakerFee      decimal.Decimal     `json:"spot_maker_fee"`
+	SpotTakerFee      decimal.Decimal     `json:"spot_taker_fee"`
+	SpotRPIMakerFee   decimal.Decimal     `json:"spot_rpi_maker_fee"`
+	FutureMakerFee    decimal.Decimal     `json:"future_maker_fee"`
+	FutureTakerFee    decimal.Decimal     `json:"future_taker_fee"`
+	FutureRPIMakerFee decimal.Decimal     `json:"future_rpi_maker_fee"`
+	SpecialFeeList    []CrossexSpecialFee `json:"special_fee_list"`
 }
 
 // CrossexSpecialFee is a per-symbol fee-rate override.
@@ -173,6 +178,7 @@ type CrossexSpecialFee struct {
 	Symbol       string          `json:"symbol"`
 	TakerFeeRate decimal.Decimal `json:"taker_fee_rate"`
 	MakerFeeRate decimal.Decimal `json:"maker_fee_rate"`
+	RPIFeeRate   decimal.Decimal `json:"rpi_fee_rate"`
 }
 
 // QueryCoinDiscountRateService -- GET /api/v4/crossex/coin_discount_rate (private)
