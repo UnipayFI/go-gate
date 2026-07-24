@@ -116,6 +116,7 @@ type ContractStat struct {
 	ShortTakerSize  decimal.Decimal `json:"short_taker_size"`
 	LongUsers       int64           `json:"long_users"`
 	ShortUsers      int64           `json:"short_users"`
+	LastFundingRate decimal.Decimal `json:"last_funding_rate"`
 }
 
 // GetIndexConstituentsService -- GET /api/v4/futures/{settle}/index_constituents/{index}
@@ -204,7 +205,8 @@ type FuturesLiquidate struct {
 	OrderSize  decimal.Decimal `json:"order_size"`
 	OrderPrice decimal.Decimal `json:"order_price"`
 	FillPrice  decimal.Decimal `json:"fill_price"`
-	Left       decimal.Decimal `json:"left"`
+	// Left is a reserved field with no current business significance.
+	Left decimal.Decimal `json:"left"`
 }
 
 // ListFuturesRiskLimitTiersService -- GET /api/v4/futures/{settle}/risk_limit_tiers
