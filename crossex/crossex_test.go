@@ -75,6 +75,48 @@ func TestCrossex(t *testing.T) {
 		testutil.AssertCovers(t, "crossex/transfers/coin", raw, got)
 	})
 
+	t.Run("QueryMarketTickers", func(t *testing.T) {
+		c := testClient(t)
+		cx := testutil.Ctx(t)
+		if err := c.SyncServerTime(cx); err != nil {
+			t.Fatalf("sync time: %v", err)
+		}
+		got, err := c.NewQueryMarketTickersService().Do(cx)
+		if err != nil {
+			if testutil.Tolerable(t, "crossex/market/tickers", err) {
+				return
+			}
+			t.Fatalf("query market tickers: %v", err)
+		}
+		t.Logf("tickers=%d", len(got))
+		if len(got) == 0 {
+			t.Skip("no tickers")
+		}
+		raw := testutil.FetchRawGet(t, c, cx, "/api/v4/crossex/market/tickers", map[string]string{}, true)
+		testutil.AssertCovers(t, "crossex/market/tickers", raw, got)
+	})
+
+	t.Run("QueryMarketFundingInfo", func(t *testing.T) {
+		c := testClient(t)
+		cx := testutil.Ctx(t)
+		if err := c.SyncServerTime(cx); err != nil {
+			t.Fatalf("sync time: %v", err)
+		}
+		got, err := c.NewQueryMarketFundingInfoService().Do(cx)
+		if err != nil {
+			if testutil.Tolerable(t, "crossex/market/funding_info", err) {
+				return
+			}
+			t.Fatalf("query market funding info: %v", err)
+		}
+		t.Logf("funding info=%d", len(got))
+		if len(got) == 0 {
+			t.Skip("no funding info")
+		}
+		raw := testutil.FetchRawGet(t, c, cx, "/api/v4/crossex/market/funding_info", map[string]string{}, true)
+		testutil.AssertCovers(t, "crossex/market/funding_info", raw, got)
+	})
+
 	t.Run("ListTransfers", func(t *testing.T) {
 		c := testClient(t)
 		cx := testutil.Ctx(t)
