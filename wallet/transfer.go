@@ -84,6 +84,24 @@ func (s *TransferService) Do(ctx context.Context) (*TransferResult, error) {
 	return request.Do[TransferResult](req)
 }
 
+// GetTransferService -- GET /api/v4/wallet/transfers (private)
+//
+// Returns the details of one trading-account transfer, looked up by the tx_id
+// returned from the transfer endpoint.
+type GetTransferService struct {
+	c      *WalletClient
+	params map[string]string
+}
+
+func (c *WalletClient) NewGetTransferService(txID string) *GetTransferService {
+	return &GetTransferService{c: c, params: map[string]string{"tx_id": txID}}
+}
+
+func (s *GetTransferService) Do(ctx context.Context) (*AccountTransferDetail, error) {
+	req := request.Get(ctx, s.c, "/api/v4/wallet/transfers", s.params).WithSign()
+	return request.Do[AccountTransferDetail](req)
+}
+
 // ListSubAccountTransfersService -- GET /api/v4/wallet/sub_account_transfers (private)
 //
 // Returns the transfer records between the main account and its sub-accounts.
@@ -354,6 +372,21 @@ type MultiChainAddress struct {
 // TransferResult is the tx_id assigned to an accepted transfer.
 type TransferResult struct {
 	TxID int64 `json:"tx_id"`
+}
+
+// AccountTransferDetail is one trading-account transfer looked up by tx_id.
+// Status is pending, success or fail; the account types are spot, margin,
+// futures, delivery, options or unknown. Settle is only set for futures,
+// delivery and options transfers, CurrencyPair only for margin transfers.
+type AccountTransferDetail struct {
+	TxID         string          `json:"tx_id"`
+	Status       string          `json:"status"`
+	Currency     string          `json:"currency"`
+	Amount       decimal.Decimal `json:"amount"`
+	FromAccount  string          `json:"from_account"`
+	ToAccount    string          `json:"to_account"`
+	Settle       string          `json:"settle"`
+	CurrencyPair string          `json:"currency_pair"`
 }
 
 // SubAccountTransfer is a single transfer record between the main and a sub-account.

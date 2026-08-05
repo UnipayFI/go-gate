@@ -127,6 +127,23 @@ func TestWalletTransfer(t *testing.T) {
 		testutil.AssertCovers(t, "wallet/order_status", raw, st)
 	})
 
+	t.Run("GetTransfer", func(t *testing.T) {
+		// Without a real tx_id the lookup is expected to fail; treat any error as
+		// non-fatal so the endpoint path/signing are still exercised.
+		got, err := c.NewGetTransferService("1").Do(cx)
+		if err != nil {
+			if testutil.Tolerable(t, "wallet/transfers", err) {
+				return
+			}
+			t.Logf("get transfer (expected without a real tx_id): %v", err)
+			return
+		}
+		t.Logf("transfer=%+v", got)
+		raw := testutil.FetchRawGet(t, c, cx, "/api/v4/wallet/transfers",
+			map[string]string{"tx_id": "1"}, true)
+		testutil.AssertCovers(t, "wallet/transfers", raw, got)
+	})
+
 	t.Run("Transfer", func(t *testing.T) {
 		if !testutil.WriteEnabled() {
 			t.Skip("write ops disabled; set GATE_TEST_WRITE=1")
