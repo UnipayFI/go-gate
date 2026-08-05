@@ -76,7 +76,7 @@ type StockOrder struct {
 //
 // Places a single order. side is 1=sell, 2=buy; priceType is "market" or
 // "limit"; tradingSession is "regular" (market orders only support regular) or
-// "all" (limit orders only); timeInForce is "day" or "gtc". Price is required
+// "all" (limit orders only); timeInForce only supports "day". Price is required
 // for limit orders.
 type CreateOrderService struct {
 	c    *StockClient
@@ -211,9 +211,9 @@ type StockOrderHistoryResponse struct {
 }
 
 // StockOrderHistory is a single historical order. side is 1=sell, 2=buy;
-// time_setup / time_done are integer-second Unix timestamps; status_detail is
-// null unless the server attaches a title/message; avg_fill_price is null until
-// the order fills.
+// time_in_force only ever reports "day"; time_setup / time_done are
+// integer-second Unix timestamps; status_detail is null unless the server
+// attaches a title/message; avg_fill_price is null until the order fills.
 type StockOrderHistory struct {
 	OrderID       string                  `json:"order_id"`
 	Symbol        string                  `json:"symbol"`
