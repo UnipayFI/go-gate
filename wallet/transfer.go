@@ -337,16 +337,18 @@ func (s *ListSavedAddressService) Do(ctx context.Context) ([]SavedAddress, error
 }
 
 // CurrencyChain is a deposit/withdrawal chain supported for a currency.
+// withdraw_amount_min is returned by the live API but absent from the docs.
 type CurrencyChain struct {
-	Chain              string `json:"chain"`
-	NameCN             string `json:"name_cn"`
-	NameEN             string `json:"name_en"`
-	ContractAddress    string `json:"contract_address"`
-	IsDisabled         int    `json:"is_disabled"`
-	IsDepositDisabled  int    `json:"is_deposit_disabled"`
-	IsWithdrawDisabled int    `json:"is_withdraw_disabled"`
-	IsTag              int    `json:"is_tag"`
-	Decimal            string `json:"decimal"`
+	Chain              string          `json:"chain"`
+	NameCN             string          `json:"name_cn"`
+	NameEN             string          `json:"name_en"`
+	ContractAddress    string          `json:"contract_address"`
+	IsDisabled         int             `json:"is_disabled"`
+	IsDepositDisabled  int             `json:"is_deposit_disabled"`
+	IsWithdrawDisabled int             `json:"is_withdraw_disabled"`
+	IsTag              int             `json:"is_tag"`
+	Decimal            string          `json:"decimal"`
+	WithdrawAmountMin  decimal.Decimal `json:"withdraw_amount_min"`
 }
 
 // DepositAddress is the deposit address of a currency, including the per-chain
