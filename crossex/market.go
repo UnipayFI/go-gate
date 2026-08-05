@@ -84,8 +84,8 @@ func (s *QueryMarketFundingInfoService) Do(ctx context.Context) ([]CrossexMarket
 }
 
 // CrossexMarketFundingInfo is one venue/symbol futures funding snapshot.
-// funding_time is a millisecond Unix timestamp; funding_interval is the funding
-// cycle length in seconds.
+// funding_time is the next funding time as a millisecond Unix timestamp;
+// funding_interval is the funding cycle length in seconds.
 type CrossexMarketFundingInfo struct {
 	Symbol          string          `json:"symbol"`
 	FundingRate     decimal.Decimal `json:"funding_rate"`

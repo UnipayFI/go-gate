@@ -111,7 +111,11 @@ func (s *UpdateMarginPositionLeverageService) Do(ctx context.Context) (*CrossexL
 
 // ClosePositionService -- POST /api/v4/crossex/position (private)
 //
-// Fully closes a contract or leveraged position for a trading pair.
+// Fully closes a contract or leveraged position for a trading pair. The account
+// must have no open orders for the symbol, and the position is only closed
+// automatically when it is strictly below the minimum notional amount
+// (minNotional) or the minimum order size (minSize) — the rule exists so that
+// positions too small to submit to an exchange do not become stranded.
 type ClosePositionService struct {
 	c    *CrossexClient
 	body map[string]any
@@ -167,9 +171,10 @@ func (s *ListPositionsService) Do(ctx context.Context) ([]CrossexPosition, error
 	return *resp, nil
 }
 
-// CrossexPosition is one open contract position. funding_time, create_time and
-// update_time are millisecond Unix timestamps (funding_time 0 means the funding
-// fee has not been collected yet).
+// CrossexPosition is one open contract position. funding_fee is the position's
+// accumulated funding fee — positive is a gain, negative a loss. funding_time,
+// create_time and update_time are millisecond Unix timestamps (funding_time 0
+// means the funding fee has not been collected yet).
 type CrossexPosition struct {
 	UserID            string          `json:"user_id"`
 	PositionID        string          `json:"position_id"`

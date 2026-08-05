@@ -169,7 +169,10 @@ func (s *ListAccountBookService) Do(ctx context.Context) ([]CrossexAccountBookRe
 
 // CrossexAccountBookRecord is one asset-change (bill) entry. create_time is a
 // millisecond Unix timestamp; change is positive for inflows, negative for
-// outflows.
+// outflows. business_id depends on statement_type: the order ID for TRANSACTION
+// and TRADING_FEE, the liquidation order ID for LIQUIDATION_FEE, and the
+// position ID plus funding settlement time for FUNDING_FEE; other types carry a
+// system-generated processing ID with no business meaning.
 type CrossexAccountBookRecord struct {
 	ID            string          `json:"id"`
 	UserID        string          `json:"user_id"`
