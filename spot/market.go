@@ -67,6 +67,9 @@ func (s *GetCurrencyPairService) Do(ctx context.Context) (*CurrencyPair, error) 
 }
 
 // CurrencyPair is a spot trading pair and its trading rules.
+// MarketOrderMaxStock and MarketOrderMaxMoney cap a market order by quantity
+// and by amount; Gate sends null or 0 when the pair has no such limit, and both
+// forms decode to 0 here.
 type CurrencyPair struct {
 	ID                  string          `json:"id"`
 	Base                string          `json:"base"`
