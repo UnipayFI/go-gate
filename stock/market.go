@@ -257,7 +257,8 @@ type StockExchange struct {
 
 // GetFeeRateService -- GET /api/v4/stock/fee-rate (public)
 //
-// Returns the maker/taker fee rates per VIP level.
+// Returns the maker/taker fee rates per VIP level for Japanese and Korean
+// stocks.
 type GetFeeRateService struct {
 	c *StockClient
 }
@@ -280,7 +281,8 @@ type StockFeeRateResponse struct {
 	} `json:"data"`
 }
 
-// StockFeeRate is a single VIP level's maker/taker fee rate.
+// StockFeeRate is a single VIP level's maker/taker fee rate for Japanese and
+// Korean stocks.
 type StockFeeRate struct {
 	VIPLevel int             `json:"vip_level"`
 	MakerFee decimal.Decimal `json:"maker_fee"`

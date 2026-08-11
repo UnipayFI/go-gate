@@ -17,7 +17,7 @@ var _ request.Client = (*StockClient)(nil)
 // traditional-finance stock spot trading; like the other envelope-wrapped
 // products it returns an APIV4-compatible {data, timestamp} body on success and
 // {label, message, data, timestamp} on failure, so each Service returns that
-// envelope struct.
+// envelope struct. Every /api/v4/stock/* endpoint is rate limited to 5 qps.
 type StockClient struct {
 	*client.Client
 }
