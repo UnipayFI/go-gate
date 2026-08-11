@@ -11,7 +11,11 @@ import (
 // PlaceBizPushOrderService -- POST /api/v4/p2p/merchant/books/place_biz_push_order (private)
 //
 // Publishes or edits a P2P advertisement. adType selects the operation
-// (0 publish sell, 1 publish buy, 2 edit sell, 3 edit buy).
+// (0 publish sell, 1 publish buy, 2 edit sell, 3 edit buy). payType is the
+// comma-separated list of payment types enabled for the ad, taken from pay_type
+// in the payment method list (e.g. "bank", "alipay", "wechat", "paypal",
+// "swift", "wu"); SetPayTypeJSON then maps each of those types to the payment
+// method id to use for it.
 type PlaceBizPushOrderService struct {
 	c    *P2PClient
 	body map[string]any
@@ -28,7 +32,9 @@ func (c *P2PClient) NewPlaceBizPushOrderService(currencyType, exchangeType, adTy
 	}}
 }
 
-// SetPayTypeJSON sets a JSON map of payment type -> user's payment method id.
+// SetPayTypeJSON sets a JSON string keyed by the payment types listed in
+// payType, each value being the current user's payment method id for that type
+// (e.g. {"bank":"10001","swift":"10002"} when payType is "bank,swift").
 func (s *PlaceBizPushOrderService) SetPayTypeJSON(payTypeJSON string) *PlaceBizPushOrderService {
 	s.body["pay_type_json"] = payTypeJSON
 	return s
