@@ -101,7 +101,7 @@ func (s *CreateSpotPOVOrderService) Do(ctx context.Context) (*SpotPOVOrder, erro
 	return request.Do[SpotPOVOrder](req)
 }
 
-// CancelSpotPOVOrdersService -- POST /api/v4/spot/pov_orders/cancel (private)
+// CancelSpotPOVOrdersService -- DELETE /api/v4/spot/pov_orders (private)
 //
 // Cancels the account's running POV orders in bulk, optionally scoped to a
 // single trading pair. The request only reports that the batch was accepted;
@@ -122,11 +122,7 @@ func (s *CancelSpotPOVOrdersService) SetCurrencyPair(currencyPair string) *Cance
 }
 
 func (s *CancelSpotPOVOrdersService) Do(ctx context.Context) ([]SpotPOVOrder, error) {
-	req := request.Post(ctx, s.c, "/api/v4/spot/pov_orders/cancel")
-	for k, v := range s.params {
-		req.SetQuery(k, v)
-	}
-	req.WithSign()
+	req := request.Delete(ctx, s.c, "/api/v4/spot/pov_orders", s.params).WithSign()
 	resp, err := request.Do[[]SpotPOVOrder](req)
 	if err != nil {
 		return nil, err
@@ -152,7 +148,7 @@ func (s *GetSpotPOVOrderService) Do(ctx context.Context) (*SpotPOVOrder, error) 
 	return request.Do[SpotPOVOrder](req)
 }
 
-// CancelSpotPOVOrderService -- POST /api/v4/spot/pov_orders/{order_id}/cancel (private)
+// CancelSpotPOVOrderService -- DELETE /api/v4/spot/pov_orders/{order_id} (private)
 //
 // Cancels a single POV order, addressed by the ID returned at creation or by
 // the custom ID set through the order's text field.
@@ -166,7 +162,7 @@ func (c *SpotClient) NewCancelSpotPOVOrderService(orderID string) *CancelSpotPOV
 }
 
 func (s *CancelSpotPOVOrderService) Do(ctx context.Context) (*SpotPOVOrder, error) {
-	req := request.Post(ctx, s.c, "/api/v4/spot/pov_orders/"+s.orderID+"/cancel").WithSign()
+	req := request.Delete(ctx, s.c, "/api/v4/spot/pov_orders/"+s.orderID).WithSign()
 	return request.Do[SpotPOVOrder](req)
 }
 
