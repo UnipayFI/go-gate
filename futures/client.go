@@ -10,7 +10,7 @@ import (
 var _ request.Client = (*FuturesClient)(nil)
 
 // FuturesClient is the REST client for Gate's perpetual-futures endpoints under
-// /api/v4/futures/{settle}/*. The settle currency (usdt / btc) is a per-request
+// /api/v4/futures/{settle}/*. The settle currency (usdt / btc / usd1) is a per-request
 // path argument, so one client serves every settlement.
 type FuturesClient struct {
 	*client.Client

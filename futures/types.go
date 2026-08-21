@@ -8,6 +8,16 @@ const (
 	SettleUSDT Settle = "usdt"
 	SettleBTC  Settle = "btc"
 	SettleUSD  Settle = "usd"
+	SettleUSD1 Settle = "usd1"
+)
+
+// ADLRiskState is the market-level auto-deleveraging risk state of a contract.
+type ADLRiskState string
+
+const (
+	ADLRiskStateNormal  ADLRiskState = "normal"
+	ADLRiskStateWarning ADLRiskState = "warning"
+	ADLRiskStateADLRisk ADLRiskState = "adl_risk"
 )
 
 // OrderStatus is the futures order lifecycle state.
