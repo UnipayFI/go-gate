@@ -54,6 +54,11 @@ type UniCurrencyPair struct {
 	BaseMinBorrowAmount  decimal.Decimal `json:"base_min_borrow_amount"`
 	QuoteMinBorrowAmount decimal.Decimal `json:"quote_min_borrow_amount"`
 	Leverage             decimal.Decimal `json:"leverage"`
+	// Status is "enabled" while the market accepts borrowing, "disabled" once it
+	// has been delisted.
+	Status string `json:"status"`
+	// DelistedTime is when the market was delisted; zero while it is still listed.
+	DelistedTime time.Time `json:"delisted_time,format:unix"`
 }
 
 // GetMarginUniEstimateRateService -- GET /api/v4/margin/uni/estimate_rate (private)
