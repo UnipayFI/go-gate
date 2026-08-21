@@ -292,3 +292,34 @@ type FuturesRiskLimitTable struct {
 	LeverageMax     decimal.Decimal `json:"leverage_max"`
 	Deduction       decimal.Decimal `json:"deduction"`
 }
+
+// ListFuturesADLRiskStatesService -- GET /api/v4/futures/{settle}/adl_risk_states
+//
+// Returns the current market-level auto-deleveraging risk state of every
+// perpetual contract settled in one currency.
+type ListFuturesADLRiskStatesService struct {
+	c      *FuturesClient
+	settle Settle
+}
+
+func (c *FuturesClient) NewListFuturesADLRiskStatesService(settle Settle) *ListFuturesADLRiskStatesService {
+	return &ListFuturesADLRiskStatesService{c: c, settle: settle}
+}
+
+func (s *ListFuturesADLRiskStatesService) Do(ctx context.Context) (*FuturesADLRiskStates, error) {
+	req := request.Get(ctx, s.c, "/api/v4/futures/"+string(s.settle)+"/adl_risk_states")
+	return request.Do[FuturesADLRiskStates](req)
+}
+
+// FuturesADLRiskStates holds the ADL risk state of every contract under a
+// settlement currency, keyed by contract name.
+type FuturesADLRiskStates struct {
+	Settle Settle                         `json:"settle"`
+	States map[string]FuturesADLRiskState `json:"states"`
+}
+
+// FuturesADLRiskState is one contract's ADL risk state and when it was computed.
+type FuturesADLRiskState struct {
+	State          ADLRiskState `json:"state"`
+	CalculatedAtMs time.Time    `json:"calculated_at_ms,format:unixmilli"`
+}

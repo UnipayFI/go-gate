@@ -101,3 +101,30 @@ func TestFuturesStats(t *testing.T) {
 		testutil.AssertCovers(t, "futures/usdt/risk_limit_table", raw, list)
 	}
 }
+
+func TestFuturesADLRiskStates(t *testing.T) {
+	c := testPublicClient()
+	cx := testutil.Ctx(t)
+
+	// GET /api/v4/futures/usdt/adl_risk_states
+	states, err := c.NewListFuturesADLRiskStatesService(SettleUSDT).Do(cx)
+	if err != nil {
+		t.Fatalf("adl_risk_states: %v", err)
+	}
+	if states.Settle != SettleUSDT {
+		t.Fatalf("settle = %q, want %q", states.Settle, SettleUSDT)
+	}
+	if len(states.States) == 0 {
+		t.Fatal("no adl risk states returned")
+	}
+	one := states.States["BTC_USDT"]
+	t.Logf("adl states=%d BTC_USDT: state=%s calculated_at=%s", len(states.States), one.State, one.CalculatedAtMs)
+	if one.State == "" {
+		t.Fatal("BTC_USDT adl risk state is empty")
+	}
+	if one.CalculatedAtMs.IsZero() {
+		t.Fatal("BTC_USDT calculated_at_ms is zero")
+	}
+	raw := testutil.FetchRawGet(t, c, cx, "/api/v4/futures/usdt/adl_risk_states", nil, false)
+	testutil.AssertCovers(t, "futures/usdt/adl_risk_states", raw, states)
+}
