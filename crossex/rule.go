@@ -57,6 +57,9 @@ type CrossexSymbol struct {
 	// SupportRPI reports whether the symbol supports RPI order placement
 	// ("true" if supported, "false" otherwise).
 	SupportRPI string `json:"support_rpi"`
+	// SupportCross reports whether the symbol supports cross-margin order
+	// placement ("true" if supported, "false" otherwise).
+	SupportCross string `json:"support_cross"`
 }
 
 // QueryRiskLimitsService -- GET /api/v4/crossex/rule/risk_limits (private)
