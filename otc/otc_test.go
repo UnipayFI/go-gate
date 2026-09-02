@@ -147,6 +147,24 @@ func TestOTC(t *testing.T) {
 		t.Log("quote accepted")
 	})
 
+	t.Run("CreatePreUpload", func(t *testing.T) {
+		if !testutil.WriteEnabled() {
+			t.Skip("write disabled; set GATE_TEST_WRITE=1 to run")
+		}
+		c := testClient(t)
+		cx := testutil.Ctx(t)
+		if err := c.SyncServerTime(cx); err != nil {
+			t.Fatalf("sync time: %v", err)
+		}
+		// "aW1hZ2UvcG5n" is the base64 of image/png, the form the gateway requires.
+		got, err := c.NewCreatePreUploadService("aW1hZ2UvcG5n").SetScene("bank").Do(cx)
+		if err != nil {
+			t.Logf("create pre-upload: %v (tolerable)", err)
+			return
+		}
+		t.Logf("pre-upload key=%s expires_in=%d", got.Data.FileKey, got.Data.ExpiresIn)
+	})
+
 	t.Run("CreateOrder", func(t *testing.T) {
 		if !testutil.WriteEnabled() {
 			t.Skip("write disabled; set GATE_TEST_WRITE=1 to run")

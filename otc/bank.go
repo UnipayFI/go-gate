@@ -58,8 +58,13 @@ type OTCBankListItem struct {
 
 // CreateBankService -- POST /api/v4/otc/bank/create (private)
 //
-// Creates a bank card. documentation_file carries the account-opening proof file
-// content (jpg/jpeg/png/pdf, sent as a base64/binary string).
+// Creates a bank card. The account-opening proof is supplied one of two ways.
+// With the multipart upload, documentationFile carries the file content itself
+// (jpg/jpeg/png/pdf, sent as a base64/binary string) and the server writes it
+// straight to the production bucket. With the recommended pre-upload, call
+// NewCreatePreUploadService with scene "bank", upload the file to the temporary
+// bucket, then pass "" as documentationFile and hand the returned key to
+// SetDocumentationFileKey together with SetFileType.
 type CreateBankService struct {
 	c    *OTCClient
 	body map[string]any
@@ -80,6 +85,23 @@ func (c *OTCClient) NewCreateBankService(bankAccountName, bankName, bankCountry,
 // SetRemittanceLineNumber sets the optional remittance routing number.
 func (s *CreateBankService) SetRemittanceLineNumber(remittanceLineNumber string) *CreateBankService {
 	s.body["remittance_line_number"] = remittanceLineNumber
+	return s
+}
+
+// SetDocumentationFileKey selects the pre-upload mode, using the file_key that
+// NewCreatePreUploadService returned (plaintext or base64 are both accepted).
+// It clears any documentation_file set on the request, since the two upload
+// modes are mutually exclusive, and requires SetFileType alongside it.
+func (s *CreateBankService) SetDocumentationFileKey(documentationFileKey string) *CreateBankService {
+	delete(s.body, "documentation_file")
+	s.body["documentation_file_key"] = documentationFileKey
+	return s
+}
+
+// SetFileType sets the pre-uploaded file's MIME type, as plaintext or base64.
+// It is required whenever SetDocumentationFileKey is used.
+func (s *CreateBankService) SetFileType(fileType string) *CreateBankService {
+	s.body["file_type"] = fileType
 	return s
 }
 
