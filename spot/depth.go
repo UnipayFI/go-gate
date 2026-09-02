@@ -120,12 +120,14 @@ func (s *ListTradesService) Do(ctx context.Context) ([]MarketTrade, error) {
 
 // MarketTrade is a single public market trade. The role/text/order_id and
 // fee-related fields are only populated on authenticated queries; public
-// responses omit them.
+// responses omit them. TradeQuote reports the actual quote currency the trade
+// used and is only set in a unified market.
 type MarketTrade struct {
 	ID           string          `json:"id"`
 	CreateTime   time.Time       `json:"create_time,string,format:unix"`
 	CreateTimeMs time.Time       `json:"create_time_ms,string,format:unixmilli"`
 	CurrencyPair string          `json:"currency_pair"`
+	TradeQuote   string          `json:"trade_quote"`
 	Side         Side            `json:"side"`
 	Role         string          `json:"role"`
 	Amount       decimal.Decimal `json:"amount"`

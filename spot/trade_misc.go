@@ -210,12 +210,14 @@ func (s *ListMyTradesService) Do(ctx context.Context) ([]MyTrade, error) {
 	return *resp, nil
 }
 
-// MyTrade is a single personal spot trade fill.
+// MyTrade is a single personal spot trade fill. TradeQuote reports the actual
+// quote currency the fill used and is only set in a unified market.
 type MyTrade struct {
 	ID           string          `json:"id"`
 	CreateTime   time.Time       `json:"create_time,string,format:unix"`
 	CreateTimeMs time.Time       `json:"create_time_ms,string,format:unixmilli"`
 	CurrencyPair string          `json:"currency_pair"`
+	TradeQuote   string          `json:"trade_quote"`
 	Side         Side            `json:"side"`
 	Role         string          `json:"role"`
 	Amount       decimal.Decimal `json:"amount"`

@@ -38,6 +38,14 @@ func (s *CreateOrderService) SetPrice(price decimal.Decimal) *CreateOrderService
 	return s
 }
 
+// SetTradeQuote sets the actual quote currency the order trades against. It is
+// only accepted in a unified market, where the pair's trade_quotes lists the
+// quote currencies on offer.
+func (s *CreateOrderService) SetTradeQuote(tradeQuote string) *CreateOrderService {
+	s.body["trade_quote"] = tradeQuote
+	return s
+}
+
 // SetAccount selects which balance the order draws on.
 func (s *CreateOrderService) SetAccount(account Account) *CreateOrderService {
 	s.body["account"] = string(account)
@@ -238,6 +246,14 @@ func (s *CancelOrdersService) SetCurrencyPair(currencyPair string) *CancelOrders
 // SetSide limits the cancellation to one side.
 func (s *CancelOrdersService) SetSide(side Side) *CancelOrdersService {
 	s.params["side"] = string(side)
+	return s
+}
+
+// SetTradeQuote limits the cancellation to orders using that actual quote
+// currency in a unified market. When unset, every order matching the other
+// criteria is cancelled.
+func (s *CancelOrdersService) SetTradeQuote(tradeQuote string) *CancelOrdersService {
+	s.params["trade_quote"] = tradeQuote
 	return s
 }
 
@@ -547,6 +563,7 @@ type Order struct {
 	UpdateTimeMs       time.Time       `json:"update_time_ms,format:unixmilli"`
 	Status             OrderStatus     `json:"status"`
 	CurrencyPair       string          `json:"currency_pair"`
+	TradeQuote         string          `json:"trade_quote"`
 	Type               OrderType       `json:"type"`
 	Account            Account         `json:"account"`
 	Side               Side            `json:"side"`
@@ -609,6 +626,7 @@ type BatchOrderResult struct {
 	UpdateTimeMs       time.Time       `json:"update_time_ms,format:unixmilli"`
 	Status             OrderStatus     `json:"status"`
 	CurrencyPair       string          `json:"currency_pair"`
+	TradeQuote         string          `json:"trade_quote"`
 	Type               OrderType       `json:"type"`
 	Account            Account         `json:"account"`
 	Side               Side            `json:"side"`
@@ -652,6 +670,7 @@ type CrossLiquidateOrder struct {
 	UpdateTimeMs       time.Time       `json:"update_time_ms,format:unixmilli"`
 	Status             OrderStatus     `json:"status"`
 	CurrencyPair       string          `json:"currency_pair"`
+	TradeQuote         string          `json:"trade_quote"`
 	Type               OrderType       `json:"type"`
 	Account            Account         `json:"account"`
 	Side               Side            `json:"side"`

@@ -69,13 +69,16 @@ func (s *GetCurrencyPairService) Do(ctx context.Context) (*CurrencyPair, error) 
 // CurrencyPair is a spot trading pair and its trading rules.
 // MarketOrderMaxStock and MarketOrderMaxMoney cap a market order by quantity
 // and by amount; Gate sends null or 0 when the pair has no such limit, and both
-// forms decode to 0 here.
+// forms decode to 0 here. TradeQuotes lists the quote currencies a unified
+// market accepts (for example RLUSD, USD, USD1 and USDC on BTC_USD); it is
+// empty for a pair that is not part of a unified market.
 type CurrencyPair struct {
 	ID                  string          `json:"id"`
 	Base                string          `json:"base"`
 	BaseName            string          `json:"base_name"`
 	Quote               string          `json:"quote"`
 	QuoteName           string          `json:"quote_name"`
+	TradeQuotes         []string        `json:"trade_quotes"`
 	Fee                 decimal.Decimal `json:"fee"`
 	MinBaseAmount       decimal.Decimal `json:"min_base_amount"`
 	MinQuoteAmount      decimal.Decimal `json:"min_quote_amount"`
