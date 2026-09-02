@@ -70,13 +70,19 @@ func (s *SubscribeTradesService) Do(ctx context.Context, cb WsHandler[WsPublicTr
 	return request.Subscribe[WsPublicTrade](ctx, s.c, "spot.trades", s.pairs, false, cb)
 }
 
-// WsPublicTrade is a spot public-trade push.
+// WsPublicTrade is a spot public-trade push. In a unified order book
+// CurrencyPair stays the nominal subscribed market while Stock and Money name
+// the assets the trade actually used; TradeMode is 0 for a regular book,
+// 1 quote-side unified, 2 base-side unified and 3 unified on both sides.
 type WsPublicTrade struct {
 	ID           int64           `json:"id"`
 	CreateTime   time.Time       `json:"create_time,format:unix"`
 	CreateTimeMs time.Time       `json:"create_time_ms,string,format:unixmilli"`
 	Side         Side            `json:"side"`
 	CurrencyPair string          `json:"currency_pair"`
+	Stock        string          `json:"stock"`
+	Money        string          `json:"money"`
+	TradeMode    int             `json:"trade_mode"`
 	Amount       decimal.Decimal `json:"amount"`
 	Price        decimal.Decimal `json:"price"`
 }
@@ -207,6 +213,9 @@ func (s *SubscribeOrdersService) Do(ctx context.Context, cb WsHandler[[]WsOrder]
 }
 
 // WsOrder is an own-order update push. Event is "put", "update" or "finish".
+// In a unified order book CurrencyPair stays the nominal subscribed market while
+// Stock and Money name the assets actually used; TradeMode is 0 for a regular
+// book, 1 quote-side unified, 2 base-side unified and 3 unified on both sides.
 type WsOrder struct {
 	ID                 string          `json:"id"`
 	Text               string          `json:"text"`
@@ -215,6 +224,9 @@ type WsOrder struct {
 	CreateTimeMs       time.Time       `json:"create_time_ms,string,format:unixmilli"`
 	UpdateTimeMs       time.Time       `json:"update_time_ms,string,format:unixmilli"`
 	CurrencyPair       string          `json:"currency_pair"`
+	Stock              string          `json:"stock"`
+	Money              string          `json:"money"`
+	TradeMode          int             `json:"trade_mode"`
 	Type               OrderType       `json:"type"`
 	Account            Account         `json:"account"`
 	Side               Side            `json:"side"`
@@ -254,12 +266,16 @@ func (s *SubscribeUserTradesService) Do(ctx context.Context, cb WsHandler[[]WsUs
 	return request.Subscribe[[]WsUserTrade](ctx, s.c, "spot.usertrades", s.pairs, true, cb)
 }
 
-// WsUserTrade is an own-fill push.
+// WsUserTrade is an own-fill push. Stock, Money and TradeMode describe the
+// unified order book the fill came from, as on WsOrder.
 type WsUserTrade struct {
 	ID           int64           `json:"id"`
 	UserID       int64           `json:"user_id"`
 	OrderID      string          `json:"order_id"`
 	CurrencyPair string          `json:"currency_pair"`
+	Stock        string          `json:"stock"`
+	Money        string          `json:"money"`
+	TradeMode    int             `json:"trade_mode"`
 	CreateTime   time.Time       `json:"create_time,format:unix"`
 	CreateTimeMs time.Time       `json:"create_time_ms,string,format:unixmilli"`
 	Side         Side            `json:"side"`
