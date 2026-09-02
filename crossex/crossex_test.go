@@ -217,6 +217,26 @@ func TestCrossex(t *testing.T) {
 		testutil.AssertCovers(t, "crossex/margin_positions/leverage", raw, got)
 	})
 
+	t.Run("GetPositionMarginMode", func(t *testing.T) {
+		c := testClient(t)
+		cx := testutil.Ctx(t)
+		if err := c.SyncServerTime(cx); err != nil {
+			t.Fatalf("sync time: %v", err)
+		}
+		symbol := "HYPERLIQUID_FUTURE_BTC_USDC"
+		got, err := c.NewGetPositionMarginModeService(symbol).Do(cx)
+		if err != nil {
+			if testutil.Tolerable(t, "crossex/positions/margin_mode", err) {
+				return
+			}
+			t.Fatalf("get position margin mode: %v", err)
+		}
+		t.Logf("margin mode=%s", got.MarginMode)
+		raw := testutil.FetchRawGet(t, c, cx, "/api/v4/crossex/positions/margin_mode",
+			map[string]string{"symbol": symbol}, true)
+		testutil.AssertCovers(t, "crossex/positions/margin_mode", raw, got)
+	})
+
 	t.Run("QueryInterestRate", func(t *testing.T) {
 		c := testClient(t)
 		cx := testutil.Ctx(t)
@@ -667,6 +687,41 @@ func TestCrossex(t *testing.T) {
 			return
 		}
 		t.Log("update margin position leverage accepted")
+	})
+
+	t.Run("UpdatePositionMarginMode", func(t *testing.T) {
+		if !testutil.WriteEnabled() {
+			t.Skip("write disabled; set GATE_TEST_WRITE=1 to run")
+		}
+		c := testClient(t)
+		cx := testutil.Ctx(t)
+		if err := c.SyncServerTime(cx); err != nil {
+			t.Fatalf("sync time: %v", err)
+		}
+		_, err := c.NewUpdatePositionMarginModeService("HYPERLIQUID_FUTURE_BTC_USDC", "CROSS").Do(cx)
+		if err != nil {
+			t.Logf("update position margin mode: %v (tolerable)", err)
+			return
+		}
+		t.Log("update position margin mode accepted")
+	})
+
+	t.Run("UpdatePositionMargin", func(t *testing.T) {
+		if !testutil.WriteEnabled() {
+			t.Skip("write disabled; set GATE_TEST_WRITE=1 to run")
+		}
+		c := testClient(t)
+		cx := testutil.Ctx(t)
+		if err := c.SyncServerTime(cx); err != nil {
+			t.Fatalf("sync time: %v", err)
+		}
+		_, err := c.NewUpdatePositionMarginService("HYPERLIQUID_FUTURE_BTC_USDC",
+			decimal.NewFromInt(1)).SetPositionSide("NONE").Do(cx)
+		if err != nil {
+			t.Logf("update position margin: %v (tolerable)", err)
+			return
+		}
+		t.Log("update position margin accepted")
 	})
 
 	t.Run("ClosePosition", func(t *testing.T) {

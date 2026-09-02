@@ -109,6 +109,89 @@ func (s *UpdateMarginPositionLeverageService) Do(ctx context.Context) (*CrossexL
 	return request.Do[CrossexLeverage](req)
 }
 
+// GetPositionMarginModeService -- GET /api/v4/crossex/positions/margin_mode (private)
+//
+// Returns the margin mode ("CROSS" or "ISOLATED") of a futures trading pair.
+type GetPositionMarginModeService struct {
+	c      *CrossexClient
+	params map[string]string
+}
+
+func (c *CrossexClient) NewGetPositionMarginModeService(symbol string) *GetPositionMarginModeService {
+	return &GetPositionMarginModeService{c: c, params: map[string]string{
+		"symbol": symbol,
+	}}
+}
+
+func (s *GetPositionMarginModeService) Do(ctx context.Context) (*CrossexMarginMode, error) {
+	req := request.Get(ctx, s.c, "/api/v4/crossex/positions/margin_mode", s.params).WithSign()
+	return request.Do[CrossexMarginMode](req)
+}
+
+// UpdatePositionMarginModeService -- POST /api/v4/crossex/positions/margin_mode (private)
+//
+// Switches a futures trading pair between cross and isolated margin.
+type UpdatePositionMarginModeService struct {
+	c    *CrossexClient
+	body map[string]any
+}
+
+func (c *CrossexClient) NewUpdatePositionMarginModeService(symbol, marginMode string) *UpdatePositionMarginModeService {
+	return &UpdatePositionMarginModeService{c: c, body: map[string]any{
+		"symbol":      symbol,
+		"margin_mode": marginMode,
+	}}
+}
+
+func (s *UpdatePositionMarginModeService) Do(ctx context.Context) (*CrossexMarginMode, error) {
+	req := request.Post(ctx, s.c, "/api/v4/crossex/positions/margin_mode", s.body).WithSign()
+	return request.Do[CrossexMarginMode](req)
+}
+
+// CrossexMarginMode is the margin mode of a futures trading pair: "CROSS" or
+// "ISOLATED".
+type CrossexMarginMode struct {
+	Symbol     string `json:"symbol"`
+	MarginMode string `json:"margin_mode"`
+}
+
+// UpdatePositionMarginService -- POST /api/v4/crossex/positions/margin (private)
+//
+// Increases or decreases the isolated margin of a position. A positive margin
+// adds margin, a negative one withdraws it, and more than two decimal places are
+// truncated. Only Hyperliquid isolated futures positions are supported.
+type UpdatePositionMarginService struct {
+	c    *CrossexClient
+	body map[string]any
+}
+
+func (c *CrossexClient) NewUpdatePositionMarginService(symbol string, margin decimal.Decimal) *UpdatePositionMarginService {
+	return &UpdatePositionMarginService{c: c, body: map[string]any{
+		"symbol": symbol,
+		"margin": margin.String(),
+	}}
+}
+
+// SetPositionSide sets the position side ("NONE", "LONG" or "SHORT"). It
+// defaults to "NONE" for one-way positions.
+func (s *UpdatePositionMarginService) SetPositionSide(positionSide string) *UpdatePositionMarginService {
+	s.body["position_side"] = positionSide
+	return s
+}
+
+func (s *UpdatePositionMarginService) Do(ctx context.Context) (*CrossexIsolatedMargin, error) {
+	req := request.Post(ctx, s.c, "/api/v4/crossex/positions/margin", s.body).WithSign()
+	return request.Do[CrossexIsolatedMargin](req)
+}
+
+// CrossexIsolatedMargin echoes the isolated-margin adjustment that was accepted.
+// PositionSide is "NONE" for a one-way position, otherwise "LONG" or "SHORT".
+type CrossexIsolatedMargin struct {
+	Symbol       string          `json:"symbol"`
+	Margin       decimal.Decimal `json:"margin"`
+	PositionSide string          `json:"position_side"`
+}
+
 // ClosePositionService -- POST /api/v4/crossex/position (private)
 //
 // Fully closes a contract or leveraged position for a trading pair. The account
@@ -338,7 +421,8 @@ func (s *ListHistoryPositionsService) Do(ctx context.Context) ([]CrossexHistoric
 }
 
 // CrossexHistoricalPosition is one closed contract-position record. create_time
-// and update_time are millisecond Unix timestamps.
+// and update_time are millisecond Unix timestamps. MarginMode is "CROSS" or
+// "ISOLATED" and is only set for venues that report it.
 type CrossexHistoricalPosition struct {
 	PositionID     string          `json:"position_id"`
 	UserID         string          `json:"user_id"`
@@ -357,6 +441,7 @@ type CrossexHistoricalPosition struct {
 	PositionSide   string          `json:"position_side"`
 	PositionMode   string          `json:"position_mode"`
 	Leverage       decimal.Decimal `json:"leverage"`
+	MarginMode     string          `json:"margin_mode"`
 	BusinessType   string          `json:"business_type"`
 	CreateTime     time.Time       `json:"create_time,string,format:unixmilli"`
 	UpdateTime     time.Time       `json:"update_time,string,format:unixmilli"`
