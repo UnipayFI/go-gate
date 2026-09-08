@@ -68,8 +68,11 @@ type StockSymbolsResponse struct {
 	} `json:"data"`
 }
 
-// StockSymbol is a single tradable symbol. trade_mode is the current session
-// trading mode (0=disabled, 1=buy only, 2=sell only, 4=buy and sell);
+// StockSymbol is a single tradable symbol. category is CS (common stock), ETF,
+// ADRC or ADR (depositary receipts for foreign companies listed in the U.S.),
+// ETV (exchange-traded products), PFD (preferred stock), ETS (exchange-traded
+// securities), ETN (exchange-traded notes) or FUND; trade_mode is the current
+// session trading mode (0=disabled, 1=buy only, 2=sell only, 4=buy and sell);
 // order_fill_timing is 1=immediate, 2=after pre-market opens, 3=after regular
 // session opens.
 type StockSymbol struct {
@@ -154,7 +157,10 @@ type StockSymbolDetailsResponse struct {
 	} `json:"data"`
 }
 
-// StockSymbolDetail is a single symbol's contract specification.
+// StockSymbolDetail is a single symbol's contract specification. category is CS
+// (common stock), ETF, ADRC or ADR (depositary receipts for foreign companies
+// listed in the U.S.), ETV (exchange-traded products), PFD (preferred stock),
+// ETS (exchange-traded securities), ETN (exchange-traded notes) or FUND.
 type StockSymbolDetail struct {
 	Symbol                 string            `json:"symbol"`
 	Exchange               string            `json:"exchange"`
