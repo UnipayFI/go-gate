@@ -82,6 +82,13 @@ func (s *CreateOrderService) SetPriceSL(priceSL decimal.Decimal) *CreateOrderSer
 	return s
 }
 
+// SetLeverage sets the order leverage; it must be one of the multipliers the
+// symbol allows (TradfiSymbol.Leverages).
+func (s *CreateOrderService) SetLeverage(leverage int) *CreateOrderService {
+	s.body["leverage"] = leverage
+	return s
+}
+
 func (s *CreateOrderService) Do(ctx context.Context) (*TradfiCreateOrderResponse, error) {
 	req := request.Post(ctx, s.c, "/api/v4/tradfi/orders", s.body).WithSign()
 	return request.Do[TradfiCreateOrderResponse](req)
