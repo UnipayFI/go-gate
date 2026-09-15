@@ -18,6 +18,8 @@ var _ request.Client = (*StockClient)(nil)
 // products it returns an APIV4-compatible {data, timestamp} body on success and
 // {label, message, data, timestamp} on failure, so each Service returns that
 // envelope struct. Every /api/v4/stock/* endpoint is rate limited to 5 qps.
+// Lead trading via APIv4 requires the x-gate-trader-copy-type: stock_copy
+// request header; fund transfers (/stock/transactions) are excluded.
 type StockClient struct {
 	*client.Client
 }
