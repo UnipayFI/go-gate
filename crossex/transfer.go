@@ -121,7 +121,8 @@ type CrossexTransferRecord struct {
 // CreateTransferService -- POST /api/v4/crossex/transfers (private)
 //
 // Transfers funds between cross-exchange credit accounts (from receiving account
-// to debit account).
+// to debit account). When either side is CROSSEX_HYPERLIQUID or CROSSEX_LIGHTER,
+// the other side must be SPOT and only USDC is supported.
 type CreateTransferService struct {
 	c    *CrossexClient
 	body map[string]any

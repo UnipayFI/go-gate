@@ -12,7 +12,8 @@ import (
 // CreateOrderService -- POST /api/v4/crossex/orders (private)
 //
 // Places a single cross-exchange order. symbol is the venue-qualified pair
-// (e.g. BINANCE_SPOT_BTC_USDT) and side is BUY or SELL.
+// {Exchange}_{Business}_{Base}_{Counter} (e.g. BINANCE_SPOT_BTC_USDT,
+// LIGHTER_FUTURE_BTC_USDC) and side is BUY or SELL.
 type CreateOrderService struct {
 	c    *CrossexClient
 	body map[string]any

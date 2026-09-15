@@ -11,6 +11,8 @@ import (
 // CreateConvertQuoteService -- POST /api/v4/crossex/convert/quote (private)
 //
 // Requests a flash-swap quote for converting from_coin into to_coin on a venue.
+// For HYPERLIQUID and LIGHTER only swaps between the venue's USDC and
+// CROSSEX_USDT are supported, and only in cross-exchange mode.
 type CreateConvertQuoteService struct {
 	c    *CrossexClient
 	body map[string]any
