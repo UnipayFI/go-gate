@@ -154,6 +154,7 @@ Each `Do` returns `(done chan<- struct{}, stop <-chan struct{}, err error)`: clo
 | `p2p` | P2P merchant API: account & payment methods, ads, transactions, chat |
 | `otc` | OTC fiat & stablecoin conversion + bank-card management |
 | `bot` | strategy bots: spot / futures / margin / infinite grid, spot / contract martingale, portfolio management, AIHub recommendations |
+| `announcement` | announcement articles: paginated list with title / tag / category / language / time filters |
 
 ## Testing
 

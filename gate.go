@@ -25,6 +25,7 @@
 //   - p2p         — /api/v4/p2p/*       (P2P merchant API)
 //   - otc         — /api/v4/otc/*       (OTC fiat / stablecoin conversion)
 //   - bot         — /api/v4/bot/*       (grid / martingale strategy bots)
+//   - announcement — /api/v4/ann/*      (announcement articles)
 //
 // Authentication uses Gate's APIv4 scheme (KEY / SIGN / Timestamp headers,
 // HMAC-SHA512 over method\npath\nquery\nSHA512(body)\ntimestamp); the shared
@@ -44,6 +45,7 @@ package gate
 
 import (
 	"github.com/UnipayFI/go-gate/v4/account"
+	"github.com/UnipayFI/go-gate/v4/announcement"
 	"github.com/UnipayFI/go-gate/v4/bot"
 	"github.com/UnipayFI/go-gate/v4/client"
 	"github.com/UnipayFI/go-gate/v4/crossex"
@@ -162,6 +164,11 @@ func NewOTCClient(opts ...client.Options) *otc.OTCClient {
 // NewBotClient constructs a strategy-bot (grid / martingale) REST client.
 func NewBotClient(opts ...client.Options) *bot.BotClient {
 	return bot.NewBotClient(opts...)
+}
+
+// NewAnnouncementClient constructs an announcement REST client.
+func NewAnnouncementClient(opts ...client.Options) *announcement.AnnouncementClient {
+	return announcement.NewAnnouncementClient(opts...)
 }
 
 // --- WebSocket clients ---
