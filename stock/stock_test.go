@@ -40,6 +40,26 @@ func TestStock(t *testing.T) {
 		testutil.AssertCovers(t, "stock/symbols/detail", raw, got)
 	})
 
+	t.Run("ListSymbolsJP", func(t *testing.T) {
+		c := testPublicClient()
+		cx := testutil.Ctx(t)
+		got, err := c.NewListSymbolsService().SetExchange("jp").SetPageSize(5).Do(cx)
+		if err != nil {
+			if testutil.Tolerable(t, "stock/symbols?exchange=jp", err) {
+				return
+			}
+			t.Fatalf("jp symbols: %v", err)
+		}
+		for _, s := range got.Data.List {
+			if s.Exchange != "jp" {
+				t.Fatalf("jp symbols: got exchange %q for %s", s.Exchange, s.Symbol)
+			}
+		}
+		params := map[string]string{"exchange": "jp", "page_size": "5"}
+		raw := testutil.FetchRawGet(t, c, cx, "/api/v4/stock/symbols", params, false)
+		testutil.AssertCovers(t, "stock/symbols?exchange=jp", raw, got)
+	})
+
 	t.Run("GetOrderBook", func(t *testing.T) {
 		c := testPublicClient()
 		cx := testutil.Ctx(t)

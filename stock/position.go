@@ -42,7 +42,7 @@ func (s *ListPositionsService) SetSymbol(symbol string) *ListPositionsService {
 	return s
 }
 
-// SetExchange narrows the result to an exchange ("us", "hk" or "kr").
+// SetExchange narrows the result to an exchange ("us", "hk", "kr" or "jp").
 func (s *ListPositionsService) SetExchange(exchange string) *ListPositionsService {
 	s.params["exchange"] = exchange
 	return s

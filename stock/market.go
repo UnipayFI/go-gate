@@ -28,7 +28,7 @@ func (s *ListSymbolsService) SetSymbols(symbols string) *ListSymbolsService {
 	return s
 }
 
-// SetExchange narrows the result to an exchange ("us", "hk" or "kr").
+// SetExchange narrows the result to an exchange ("us", "hk", "kr" or "jp").
 func (s *ListSymbolsService) SetExchange(exchange string) *ListSymbolsService {
 	s.params["exchange"] = exchange
 	return s
@@ -71,10 +71,10 @@ type StockSymbolsResponse struct {
 // StockSymbol is a single tradable symbol. category is CS (common stock), ETF,
 // ADRC or ADR (depositary receipts for foreign companies listed in the U.S.),
 // ETV (exchange-traded products), PFD (preferred stock), ETS (exchange-traded
-// securities), ETN (exchange-traded notes) or FUND; trade_mode is the current
-// session trading mode (0=disabled, 1=buy only, 2=sell only, 4=buy and sell);
-// order_fill_timing is 1=immediate, 2=after pre-market opens, 3=after regular
-// session opens.
+// securities), ETN (exchange-traded notes) or FUND; asset_type is STOCK or ETF;
+// trade_mode is the current session trading mode (0=disabled, 1=buy only,
+// 2=sell only, 4=buy and sell); order_fill_timing is 1=immediate, 2=after
+// pre-market opens, 3=after regular session opens.
 type StockSymbol struct {
 	Symbol                 string            `json:"symbol"`
 	Exchange               string            `json:"exchange"`
@@ -84,6 +84,7 @@ type StockSymbol struct {
 	FXRate                 decimal.Decimal   `json:"fx_rate"`
 	SymbolDesc             string            `json:"symbol_desc"`
 	Category               string            `json:"category"`
+	AssetType              string            `json:"asset_type"`
 	TradeStatus            string            `json:"trade_status"`
 	TradeMode              int               `json:"trade_mode"`
 	OrderFillTiming        int               `json:"order_fill_timing"`
@@ -123,7 +124,7 @@ func (s *ListSymbolDetailsService) SetSymbols(symbols string) *ListSymbolDetails
 	return s
 }
 
-// SetExchange narrows the result to an exchange ("us", "hk" or "kr").
+// SetExchange narrows the result to an exchange ("us", "hk", "kr" or "jp").
 func (s *ListSymbolDetailsService) SetExchange(exchange string) *ListSymbolDetailsService {
 	s.params["exchange"] = exchange
 	return s
@@ -160,7 +161,8 @@ type StockSymbolDetailsResponse struct {
 // StockSymbolDetail is a single symbol's contract specification. category is CS
 // (common stock), ETF, ADRC or ADR (depositary receipts for foreign companies
 // listed in the U.S.), ETV (exchange-traded products), PFD (preferred stock),
-// ETS (exchange-traded securities), ETN (exchange-traded notes) or FUND.
+// ETS (exchange-traded securities), ETN (exchange-traded notes) or FUND;
+// asset_type is STOCK or ETF.
 type StockSymbolDetail struct {
 	Symbol                 string            `json:"symbol"`
 	Exchange               string            `json:"exchange"`
@@ -170,6 +172,7 @@ type StockSymbolDetail struct {
 	FXRate                 decimal.Decimal   `json:"fx_rate"`
 	SymbolDesc             string            `json:"symbol_desc"`
 	Category               string            `json:"category"`
+	AssetType              string            `json:"asset_type"`
 	SettlementCurrency     string            `json:"settlement_currency"`
 	MaxOrderVolume         decimal.Decimal   `json:"max_order_volume"`
 	StepOrderVolume        decimal.Decimal   `json:"step_order_volume"`
@@ -228,7 +231,7 @@ type StockOrderBookLevel struct {
 
 // ListExchangesService -- GET /api/v4/stock/exchanges (private)
 //
-// Lists the supported exchanges ("us", "hk", "kr") and whether each supports
+// Lists the supported exchanges ("us", "hk", "kr", "jp") and whether each supports
 // stock transfer. Despite being documented as public, the live endpoint
 // requires a signed request.
 type ListExchangesService struct {

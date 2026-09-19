@@ -51,13 +51,16 @@ type StockUserAssetsResponse struct {
 // StockUserAssets is the stock account asset snapshot. user_exists reports
 // whether the caller has activated the service.
 type StockUserAssets struct {
-	Equity              decimal.Decimal `json:"equity"`
-	Balance             decimal.Decimal `json:"balance"`
-	Available           decimal.Decimal `json:"available"`
-	PositionMarketValue decimal.Decimal `json:"position_market_value"`
-	PositionPnL         decimal.Decimal `json:"position_pnl"`
-	TodayPnL            decimal.Decimal `json:"today_pnl"`
-	UserExists          bool            `json:"user_exists"`
+	Equity                    decimal.Decimal `json:"equity"`
+	Balance                   decimal.Decimal `json:"balance"`
+	Available                 decimal.Decimal `json:"available"`
+	PositionMarketValue       decimal.Decimal `json:"position_market_value"`
+	PositionPnL               decimal.Decimal `json:"position_pnl"`
+	TodayPnL                  decimal.Decimal `json:"today_pnl"`
+	OptionPositionMarketValue decimal.Decimal `json:"option_position_market_value"`
+	OptionPositionPnL         decimal.Decimal `json:"option_position_pnl"`
+	OptionTodayPnL            decimal.Decimal `json:"option_today_pnl"`
+	UserExists                bool            `json:"user_exists"`
 }
 
 // ListTransactionsService -- GET /api/v4/stock/transactions (private)
