@@ -662,9 +662,10 @@ type FuturesTrailDetailResponse = FuturesAutoOrderEnvelope[FuturesTrailDetailDat
 type FuturesTrailChangeLogResponse = FuturesAutoOrderEnvelope[FuturesTrailChangeLogData]
 
 // FuturesTrailOrder is a trailing (trail) auto order and its live state. The
-// integer timestamps are Unix seconds; the *_precise fields carry the same times
-// as high-precision "seconds.microseconds" strings. price_offset is a callback
-// ratio or price distance that may be a percentage (e.g. "0.1%").
+// timestamps are Unix seconds sent as quoted integers; the *_precise fields
+// carry the same times as high-precision "seconds.microseconds" strings.
+// price_offset is a callback ratio or price distance that may be a percentage
+// (e.g. "0.1%").
 type FuturesTrailOrder struct {
 	ID                 int64           `json:"id"`
 	UserID             int64           `json:"user_id"`
@@ -679,12 +680,12 @@ type FuturesTrailOrder struct {
 	Text               string          `json:"text"`
 	ReduceOnly         bool            `json:"reduce_only"`
 	PositionRelated    bool            `json:"position_related"`
-	CreatedAt          time.Time       `json:"created_at,format:unix"`
-	ActivatedAt        time.Time       `json:"activated_at,format:unix"`
-	FinishedAt         time.Time       `json:"finished_at,format:unix"`
-	CreateTime         time.Time       `json:"create_time,format:unix"`
-	ActiveTime         time.Time       `json:"active_time,format:unix"`
-	FinishTime         time.Time       `json:"finish_time,format:unix"`
+	CreatedAt          time.Time       `json:"created_at,string,format:unix"`
+	ActivatedAt        time.Time       `json:"activated_at,string,format:unix"`
+	FinishedAt         time.Time       `json:"finished_at,string,format:unix"`
+	CreateTime         time.Time       `json:"create_time,string,format:unix"`
+	ActiveTime         time.Time       `json:"active_time,string,format:unix"`
+	FinishTime         time.Time       `json:"finish_time,string,format:unix"`
 	Reason             string          `json:"reason"`
 	SuborderText       string          `json:"suborder_text"`
 	IsDualMode         bool            `json:"is_dual_mode"`
@@ -694,7 +695,7 @@ type FuturesTrailOrder struct {
 	OriginalStatus     int             `json:"original_status"`
 	Status             OrderStatus     `json:"status"`
 	PositionSideOutput string          `json:"position_side_output"`
-	UpdatedAt          time.Time       `json:"updated_at,format:unix"`
+	UpdatedAt          time.Time       `json:"updated_at,string,format:unix"`
 	ExtremumPrice      decimal.Decimal `json:"extremum_price"`
 	StatusCode         string          `json:"status_code"`
 	CreatedAtPrecise   string          `json:"created_at_precise"`
