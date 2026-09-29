@@ -81,6 +81,9 @@ func TestFuturesExtra(t *testing.T) {
 			t.Fatalf("get_leverage: %v", err)
 		}
 		t.Logf("get_leverage=%s", info.Leverage)
+		raw := testutil.FetchRawGet(t, c, cx, "/api/v4/futures/usdt/get_leverage/BTC_USDT",
+			map[string]string{"pos_margin_mode": "cross", "dual_side": "dual_long"}, true)
+		testutil.AssertCovers(t, "futures/get_leverage", raw, info)
 	})
 
 	// State-changing endpoints: gated behind GATE_TEST_WRITE, exercised with

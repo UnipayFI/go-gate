@@ -106,8 +106,9 @@ func (s *GetPositionLeverageService) Do(ctx context.Context) (*FuturesLeverageIn
 }
 
 // FuturesLeverageInfo is the leverage configuration returned for a contract.
+// Gate names the key "Lever".
 type FuturesLeverageInfo struct {
-	Leverage decimal.Decimal `json:"leverage"`
+	Leverage decimal.Decimal `json:"Lever"`
 }
 
 // SetPositionLeverageService -- POST /api/v4/futures/{settle}/positions/{contract}/set_leverage (private)
