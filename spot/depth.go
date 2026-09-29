@@ -191,8 +191,10 @@ func (s *ListCandlesticksService) Do(ctx context.Context) ([]Candlestick, error)
 // Candlestick is a single OHLC point. Gate encodes each point as an array of
 // eight strings, decoded here by fixed position:
 // [unix_seconds, quote_volume, close, high, low, open, base_volume, window_closed].
+// Marshaling a Candlestick yields an object keyed by field name, with Timestamp
+// in RFC 3339, which UnmarshalJSON does not read back.
 type Candlestick struct {
-	Timestamp    time.Time
+	Timestamp    time.Time `json:",format:RFC3339Nano"`
 	QuoteVolume  decimal.Decimal
 	Close        decimal.Decimal
 	High         decimal.Decimal

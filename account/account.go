@@ -36,7 +36,7 @@ type AccountDetail struct {
 	Key                 AccountDetailKey `json:"key"`
 	CopyTradingRole     int              `json:"copy_trading_role"`
 	SpotCopyTradingRole int              `json:"spot_copy_trading_role"`
-	TierExpireTime      time.Time        `json:"tier_expire_time"` // RFC3339
+	TierExpireTime      time.Time        `json:"tier_expire_time,format:RFC3339"` // RFC3339
 }
 
 // AccountDetailKey describes the API key used for the request.
