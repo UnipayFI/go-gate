@@ -57,6 +57,7 @@ type FuturesAccount struct {
 	MarginMode             int                   `json:"margin_mode"`
 	MarginModeName         string                `json:"margin_mode_name"`
 	PositionVoucherTotal   decimal.Decimal       `json:"position_voucher_total"`
+	PnLDividend            decimal.Decimal       `json:"pnl_dividend"`
 	EnableTieredMM         bool                  `json:"enable_tiered_mm"`
 	UpdateTime             time.Time             `json:"update_time,format:unix"`
 	UpdateID               int64                 `json:"update_id"`

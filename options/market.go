@@ -212,14 +212,20 @@ func (s *GetOptionsSettlementService) Do(ctx context.Context) (*OptionsSettlemen
 	return request.Do[OptionsSettlement](req)
 }
 
-// OptionsSettlement is one contract's settlement result.
+// OptionsSettlement is one contract's settlement result. The voucher_* and
+// is_experience_position fields describe experience-voucher positions; on
+// ordinary settlements they are zero.
 type OptionsSettlement struct {
-	Time        time.Time       `json:"time,format:unix"`
-	Contract    string          `json:"contract"`
-	Profit      decimal.Decimal `json:"profit"`
-	Fee         decimal.Decimal `json:"fee"`
-	StrikePrice decimal.Decimal `json:"strike_price"`
-	SettlePrice decimal.Decimal `json:"settle_price"`
+	Time                 time.Time       `json:"time,format:unix"`
+	Contract             string          `json:"contract"`
+	Profit               decimal.Decimal `json:"profit"`
+	Fee                  decimal.Decimal `json:"fee"`
+	StrikePrice          decimal.Decimal `json:"strike_price"`
+	SettlePrice          decimal.Decimal `json:"settle_price"`
+	IsExperiencePosition bool            `json:"is_experience_position"`
+	VoucherInitValue     decimal.Decimal `json:"voucher_init_value"`
+	VoucherOpenFee       decimal.Decimal `json:"voucher_open_fee"`
+	VoucherOpenTime      time.Time       `json:"voucher_open_time,format:unix"`
 }
 
 // ListOptionsOrderBookService -- GET /api/v4/options/order_book

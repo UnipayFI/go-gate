@@ -443,6 +443,7 @@ type AccountBalance struct {
 	Currency      string          `json:"currency"`
 	UnrealisedPnL decimal.Decimal `json:"unrealised_pnl"`
 	Borrowed      decimal.Decimal `json:"borrowed"`
+	Total         decimal.Decimal `json:"total"`
 }
 
 // SavedAddress is a whitelisted withdrawal address.

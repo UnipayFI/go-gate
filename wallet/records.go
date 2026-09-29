@@ -154,16 +154,17 @@ func (s *ListDepositsService) Do(ctx context.Context) ([]DepositRecord, error) {
 
 // DepositRecord is a single deposit history entry.
 type DepositRecord struct {
-	ID              string          `json:"id"`
-	TxID            string          `json:"txid"`
-	WithdrawOrderID string          `json:"withdraw_order_id"`
-	Timestamp       time.Time       `json:"timestamp,string,format:unix"`
-	Amount          decimal.Decimal `json:"amount"`
-	Currency        string          `json:"currency"`
-	Address         string          `json:"address"`
-	Memo            string          `json:"memo"`
-	Status          string          `json:"status"`
-	Chain           string          `json:"chain"`
+	ID               string          `json:"id"`
+	TxID             string          `json:"txid"`
+	WithdrawOrderID  string          `json:"withdraw_order_id"`
+	Timestamp        time.Time       `json:"timestamp,string,format:unix"`
+	ArrivalTimestamp time.Time       `json:"arrival_timestamp,string,format:unix"`
+	Amount           decimal.Decimal `json:"amount"`
+	Currency         string          `json:"currency"`
+	Address          string          `json:"address"`
+	Memo             string          `json:"memo"`
+	Status           string          `json:"status"`
+	Chain            string          `json:"chain"`
 }
 
 // ListWithdrawStatusService -- GET /api/v4/wallet/withdraw_status (private)
@@ -467,10 +468,12 @@ func (s *ListSmallBalanceService) Do(ctx context.Context) ([]SmallBalance, error
 
 // SmallBalance is a convertible dust balance in a single currency.
 type SmallBalance struct {
-	Currency         string          `json:"currency"`
-	AvailableBalance decimal.Decimal `json:"available_balance"`
-	EstimatedAsBTC   decimal.Decimal `json:"estimated_as_btc"`
-	ConvertibleToGT  decimal.Decimal `json:"convertible_to_gt"`
+	Currency                string          `json:"currency"`
+	AvailableBalance        decimal.Decimal `json:"available_balance"`
+	EstimatedAsBTC          decimal.Decimal `json:"estimated_as_btc"`
+	EstimatedAsUSDT         decimal.Decimal `json:"estimated_as_usdt"`
+	ConvertibleToGT         decimal.Decimal `json:"convertible_to_gt"`
+	SlippageConvertibleToGT decimal.Decimal `json:"slippage_convertible_to_gt"`
 }
 
 // ConvertSmallBalanceService -- POST /api/v4/wallet/small_balance (private)

@@ -140,6 +140,7 @@ func (s *GetIndexConstituentsService) Do(ctx context.Context) (*IndexConstituent
 // IndexConstituents lists the reference exchanges behind a price index.
 type IndexConstituents struct {
 	Index        string             `json:"index"`
+	Time         time.Time          `json:"time,format:unixmilli"`
 	Constituents []IndexConstituent `json:"constituents"`
 }
 
@@ -147,6 +148,7 @@ type IndexConstituents struct {
 type IndexConstituent struct {
 	Exchange string          `json:"exchange"`
 	Symbols  []string        `json:"symbols"`
+	Price    decimal.Decimal `json:"price"`
 	Weight   decimal.Decimal `json:"weight"`
 }
 

@@ -89,6 +89,7 @@ type CurrencyPair struct {
 	TradeStatus         TradeStatus     `json:"trade_status"`
 	SellStart           time.Time       `json:"sell_start,format:unix"`
 	BuyStart            time.Time       `json:"buy_start,format:unix"`
+	DelistingTime       time.Time       `json:"delisting_time,format:unix"`
 	Type                string          `json:"type"`
 	STTag               bool            `json:"st_tag"`
 	Slippage            decimal.Decimal `json:"slippage"`

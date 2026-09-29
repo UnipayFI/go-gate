@@ -283,4 +283,6 @@ type TradfiTicker struct {
 	NextOpenTime        time.Time       `json:"next_open_time,format:unix"`
 	TradeMode           string          `json:"trade_mode"`
 	CategoryName        string          `json:"category_name"`
+	SettlementCurrency  string          `json:"settlement_currency"`
+	ExchangeRate        decimal.Decimal `json:"exchange_rate"`
 }
