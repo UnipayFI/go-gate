@@ -214,7 +214,7 @@ func (c *Candlestick) UnmarshalJSON(data []byte) error {
 	if err != nil {
 		return fmt.Errorf("gate: candlestick timestamp %q: %w", cols[0], err)
 	}
-	c.Timestamp = time.Unix(sec, 0)
+	c.Timestamp = time.Unix(sec, 0).UTC()
 	for _, f := range []struct {
 		dst *decimal.Decimal
 		src string
