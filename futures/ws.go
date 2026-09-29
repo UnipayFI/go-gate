@@ -171,8 +171,10 @@ type WsFuturesOrderBookItem struct {
 
 // SubscribeOrderBookUpdateService -- futures.order_book_update channel
 // (incremental depth). interval is "20ms", "100ms" or "1000ms"; level is
-// optional ("20", "50", "100"). The payload is [contract, interval] or
-// [contract, interval, level].
+// optional ("20", "50", "100"). Without a level Gate pushes updates for the
+// top 5 levels only (WsFuturesOrderBookUpdate.Level is "5"), so a local book
+// seeded from a deeper REST snapshot needs the level set to that depth. The
+// payload is [contract, interval] or [contract, interval, level].
 type SubscribeOrderBookUpdateService struct {
 	c        *FuturesWebSocketClient
 	contract string
@@ -184,7 +186,8 @@ func (c *FuturesWebSocketClient) NewSubscribeOrderBookUpdateService(contract, in
 	return &SubscribeOrderBookUpdateService{c: c, contract: contract, interval: interval}
 }
 
-// SetLevel adds the optional depth level to the subscription payload.
+// SetLevel adds the optional depth level to the subscription payload; without
+// it only the top 5 levels are updated.
 func (s *SubscribeOrderBookUpdateService) SetLevel(level string) *SubscribeOrderBookUpdateService {
 	s.level = level
 	return s

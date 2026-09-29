@@ -79,6 +79,39 @@ func TestFuturesWSPublic(t *testing.T) {
 		}
 	})
 
+	t.Run("OrderBookUpdate", func(t *testing.T) {
+		// Without a level Gate updates only the top 5 levels.
+		for _, tt := range []struct{ level, want string }{{"", "5"}, {"100", "100"}} {
+			got := make(chan WsFuturesOrderBookUpdate, 1)
+			svc := c.NewSubscribeOrderBookUpdateService("BTC_USDT", "100ms")
+			if tt.level != "" {
+				svc.SetLevel(tt.level)
+			}
+			done, _, err := svc.Do(ctx, func(p *request.WsPush[WsFuturesOrderBookUpdate], e error) {
+				if e != nil {
+					return
+				}
+				select {
+				case got <- p.Result:
+				default:
+				}
+			})
+			if err != nil {
+				t.Fatalf("subscribe order_book_update level %q: %v", tt.level, err)
+			}
+			select {
+			case u := <-got:
+				t.Logf("order_book_update level %q: l=%s U=%d u=%d asks=%d bids=%d", tt.level, u.Level, u.FirstID, u.LastID, len(u.Asks), len(u.Bids))
+				if u.Level != tt.want || u.Contract != "BTC_USDT" || u.LastID < u.FirstID {
+					t.Errorf("unexpected order_book_update for level %q: %+v", tt.level, u)
+				}
+			case <-time.After(15 * time.Second):
+				t.Errorf("no order_book_update push for level %q in 15s", tt.level)
+			}
+			close(done)
+		}
+	})
+
 	t.Run("Trades", func(t *testing.T) {
 		got := make(chan WsFuturesTrade, 1)
 		done, _, err := c.NewSubscribeTradesService("BTC_USDT").Do(ctx, func(p *request.WsPush[[]WsFuturesTrade], e error) {
