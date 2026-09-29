@@ -58,17 +58,13 @@ func (s *AgencyTransactionHistoryService) SetOffset(offset int) *AgencyTransacti
 	return s
 }
 
-func (s *AgencyTransactionHistoryService) Do(ctx context.Context) ([]AgencyTransaction, error) {
+func (s *AgencyTransactionHistoryService) Do(ctx context.Context) (*AgencyTransaction, error) {
 	req := request.Get(ctx, s.c, "/api/v4/rebate/agency/transaction_history", s.params).WithSign()
-	resp, err := request.Do[[]AgencyTransaction](req)
-	if err != nil {
-		return nil, err
-	}
-	return *resp, nil
+	return request.Do[AgencyTransaction](req)
 }
 
-// AgencyTransaction is one trading-pair bucket of an agency's recommended-user
-// transaction history.
+// AgencyTransaction is a page of an agency's recommended-user transaction
+// history: Gate returns one {total, list} object.
 type AgencyTransaction struct {
 	CurrencyPair string                    `json:"currency_pair"`
 	Total        int64                     `json:"total"`
@@ -143,17 +139,13 @@ func (s *AgencyCommissionsHistoryService) SetOffset(offset int) *AgencyCommissio
 	return s
 }
 
-func (s *AgencyCommissionsHistoryService) Do(ctx context.Context) ([]AgencyCommission, error) {
+func (s *AgencyCommissionsHistoryService) Do(ctx context.Context) (*AgencyCommission, error) {
 	req := request.Get(ctx, s.c, "/api/v4/rebate/agency/commission_history", s.params).WithSign()
-	resp, err := request.Do[[]AgencyCommission](req)
-	if err != nil {
-		return nil, err
-	}
-	return *resp, nil
+	return request.Do[AgencyCommission](req)
 }
 
-// AgencyCommission is one trading-pair bucket of an agency's recommended-user
-// rebate history.
+// AgencyCommission is a page of an agency's recommended-user rebate history:
+// Gate returns one {total, list} object.
 type AgencyCommission struct {
 	CurrencyPair string                   `json:"currency_pair"`
 	Total        int64                    `json:"total"`
@@ -383,13 +375,9 @@ func (s *RebateBrokerCommissionHistoryService) SetTo(to time.Time) *RebateBroker
 	return s
 }
 
-func (s *RebateBrokerCommissionHistoryService) Do(ctx context.Context) ([]BrokerCommission, error) {
+func (s *RebateBrokerCommissionHistoryService) Do(ctx context.Context) (*BrokerCommission, error) {
 	req := request.Get(ctx, s.c, "/api/v4/rebate/broker/commission_history", s.params).WithSign()
-	resp, err := request.Do[[]BrokerCommission](req)
-	if err != nil {
-		return nil, err
-	}
-	return *resp, nil
+	return request.Do[BrokerCommission](req)
 }
 
 // BrokerCommission is a page of a broker's user rebate records.
@@ -465,13 +453,9 @@ func (s *RebateBrokerTransactionHistoryService) SetTo(to time.Time) *RebateBroke
 	return s
 }
 
-func (s *RebateBrokerTransactionHistoryService) Do(ctx context.Context) ([]BrokerTransaction, error) {
+func (s *RebateBrokerTransactionHistoryService) Do(ctx context.Context) (*BrokerTransaction, error) {
 	req := request.Get(ctx, s.c, "/api/v4/rebate/broker/transaction_history", s.params).WithSign()
-	resp, err := request.Do[[]BrokerTransaction](req)
-	if err != nil {
-		return nil, err
-	}
-	return *resp, nil
+	return request.Do[BrokerTransaction](req)
 }
 
 // BrokerTransaction is a page of a broker's user trading history.
@@ -506,13 +490,9 @@ func (c *RebateClient) NewRebateUserInfoService() *RebateUserInfoService {
 	return &RebateUserInfoService{c: c}
 }
 
-func (s *RebateUserInfoService) Do(ctx context.Context) ([]RebateUserInfo, error) {
+func (s *RebateUserInfoService) Do(ctx context.Context) (*RebateUserInfo, error) {
 	req := request.Get(ctx, s.c, "/api/v4/rebate/user/info").WithSign()
-	resp, err := request.Do[[]RebateUserInfo](req)
-	if err != nil {
-		return nil, err
-	}
-	return *resp, nil
+	return request.Do[RebateUserInfo](req)
 }
 
 // RebateUserInfo is a user's rebate information.

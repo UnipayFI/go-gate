@@ -18,15 +18,15 @@ func TestRebate(t *testing.T) {
 	}
 
 	// check runs the standard capability-gated read assertion: tolerate the
-	// "account lacks this capability" errors, log any other error without
-	// failing, and only diff the raw response when data actually returns.
+	// "account lacks this capability" errors, fail on any other error (such as
+	// a response that does not decode), and diff the raw response otherwise.
 	check := func(label, path string, params map[string]string, err error, resp any) {
 		t.Helper()
 		if err != nil {
 			if testutil.Tolerable(t, label, err) {
 				return
 			}
-			t.Logf("%s: %v", label, err)
+			t.Errorf("%s: %v", label, err)
 			return
 		}
 		raw := testutil.FetchRawGet(t, c, cx, path, params, true)
@@ -34,12 +34,16 @@ func TestRebate(t *testing.T) {
 	}
 
 	agencyTx, err := c.NewAgencyTransactionHistoryService().SetLimit(2).Do(cx)
-	t.Logf("agency transaction buckets=%d", len(agencyTx))
+	if agencyTx != nil {
+		t.Logf("agency transaction total=%d records=%d", agencyTx.Total, len(agencyTx.List))
+	}
 	check("rebate/agency/transaction_history", "/api/v4/rebate/agency/transaction_history",
 		map[string]string{"limit": "2"}, err, agencyTx)
 
 	agencyComm, err := c.NewAgencyCommissionsHistoryService().SetLimit(2).Do(cx)
-	t.Logf("agency commission buckets=%d", len(agencyComm))
+	if agencyComm != nil {
+		t.Logf("agency commission total=%d records=%d", agencyComm.Total, len(agencyComm.List))
+	}
 	check("rebate/agency/commission_history", "/api/v4/rebate/agency/commission_history",
 		map[string]string{"limit": "2"}, err, agencyComm)
 
@@ -65,17 +69,23 @@ func TestRebate(t *testing.T) {
 		map[string]string{"limit": "2"}, err, partnerSub)
 
 	brokerComm, err := c.NewRebateBrokerCommissionHistoryService().SetLimit(2).Do(cx)
-	t.Logf("broker commission pages=%d", len(brokerComm))
+	if brokerComm != nil {
+		t.Logf("broker commission total=%d records=%d", brokerComm.Total, len(brokerComm.List))
+	}
 	check("rebate/broker/commission_history", "/api/v4/rebate/broker/commission_history",
 		map[string]string{"limit": "2"}, err, brokerComm)
 
 	brokerTx, err := c.NewRebateBrokerTransactionHistoryService().SetLimit(2).Do(cx)
-	t.Logf("broker transaction pages=%d", len(brokerTx))
+	if brokerTx != nil {
+		t.Logf("broker transaction total=%d records=%d", brokerTx.Total, len(brokerTx.List))
+	}
 	check("rebate/broker/transaction_history", "/api/v4/rebate/broker/transaction_history",
 		map[string]string{"limit": "2"}, err, brokerTx)
 
 	userInfo, err := c.NewRebateUserInfoService().Do(cx)
-	t.Logf("rebate user info records=%d", len(userInfo))
+	if userInfo != nil {
+		t.Logf("rebate user info invite_uid=%d", userInfo.InviteUID)
+	}
 	check("rebate/user/info", "/api/v4/rebate/user/info", nil, err, userInfo)
 
 	subRelation, err := c.NewUserSubRelationService("10000").Do(cx)
