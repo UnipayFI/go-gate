@@ -1,7 +1,7 @@
 # go-gate
 
 [![Go Reference](https://pkg.go.dev/badge/github.com/UnipayFI/go-gate/v4.svg)](https://pkg.go.dev/github.com/UnipayFI/go-gate/v4)
-[![Go 1.26+](https://img.shields.io/badge/Go-1.26%2B-00ADD8?logo=go)](go.mod)
+[![Go 1.27+](https://img.shields.io/badge/Go-1.27%2B-00ADD8?logo=go)](go.mod)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
 A Go SDK for the [Gate.com](https://www.gate.com/docs/developers/apiv4/en/) (Gate.io) exchange, covering the entire APIv4 surface — every product line, REST and WebSocket.
@@ -18,11 +18,13 @@ Response structs are reconciled against the **live API** (not just the docs), so
 go get github.com/UnipayFI/go-gate/v4@latest
 ```
 
+Requires Go 1.27 (see [JSON and timestamps](#json-and-timestamps)).
+
 ## Highlights
 
 - One signing/transport core shared by every product; each product line is its own package with a dedicated client.
 - Fluent per-endpoint API: `NewXxxService(...).SetFoo(...).Do(ctx)`.
-- Amounts as `decimal.Decimal`, timestamps as `time.Time` — Gate's string- and number-encoded numbers, its heterogeneous second/millisecond timestamps, and `""`/`"0"` "not set" sentinels are all decoded for you.
+- Amounts as `decimal.Decimal`, timestamps as `time.Time` whose wire format is declared per field with the `format` tag option (`json:"create_time,format:unix"`) — Gate's string- and number-encoded numbers, its heterogeneous second/millisecond timestamps, and `""` "not set" amounts are all decoded for you.
 - Every endpoint is tested against the live API, diffing real JSON keys against the struct.
 
 ## Quick start
@@ -121,6 +123,35 @@ ws.NewSubscribeOrdersService("!all").Do(ctx, func(p *request.WsPush[[]spot.WsOrd
 
 Each `Do` returns `(done chan<- struct{}, stop <-chan struct{}, err error)`: close `done` to unsubscribe; `stop` closes when the reader exits. Ping keepalive is automatic. Futures streams take a settle currency: `gate.NewFuturesWebSocketClient(futures.SettleUSDT, ...)`.
 
+## JSON and timestamps
+
+The SDK uses Go 1.27's `encoding/json/v2` (keep the default `jsonv2` GOEXPERIMENT enabled; without it the SDK does not
+compile). Every `time.Time` field declares the wire format Gate actually sends with the `format` tag option: a bare
+number of seconds is `json:"create_time,format:unix"`, a quoted one adds `,string`
+(`json:"create_time,string,format:unix"`), milliseconds are `format:unixmilli`, and account `tier_expire_time` is
+`format:RFC3339`. Go 1.27 only honours `format` tags when the experimental `ExperimentalSupportFormatTag` option is
+passed; `common.JSONMarshal` / `common.JSONUnmarshal`, which every service and WebSocket subscription uses, pass it.
+Encoding follows the tag exactly: the unix formats keep fractional seconds and milliseconds rather than truncating
+them, and `format:RFC3339` writes whole seconds, as Gate does. Decoding applies the tag's standard semantics plus two
+Gate quirks: a timestamp is accepted quoted or bare whatever `,string` says, and a
+10/13/16/19-digit value is read as seconds/milliseconds/microseconds/nanoseconds even where the tag declares another
+unit (such values would otherwise land in early 1970 or thousands of years ahead; Gate does send microseconds in a
+seconds field when a futures price-triggered order is cancelled). `null` reads as the zero time; a `0` that Gate sends
+for "not set" reads as the Unix epoch (`1970-01-01T00:00:00Z`), not the zero `time.Time`. Decoded times are in UTC —
+use `.Equal` to compare and `.In(loc)` / `.Local()` to display.
+
+A `time.Time` without a `format` option is RFC 3339, as in the standard library. That includes your own types passed
+through `common.JSONMarshal` / `common.JSONUnmarshal` or `request.SetBody`.
+
+To serialize SDK types yourself, use `common.JSONMarshal` / `common.JSONUnmarshal`. The one exception to round-tripping
+is `spot.Candlestick`: Gate sends it as a positional array, which its `UnmarshalJSON` reads, but it marshals to an
+object keyed by field name that `UnmarshalJSON` does not read back. Where you only need
+`encoding/json/v2` to accept the tags (say, to store or log SDK values), you can pass
+`github.com/go-json-experiment/json.ExperimentalSupportFormatTag(true)` yourself; that applies the standard semantics
+only (quoting must match the tag, no unit detection, and `""` amounts are rejected), so it cannot reliably read Gate's
+wire data. Plain `encoding/json` returns an error for structs with `format` tags (``unsupported `format` tag option``),
+and `log/slog`'s JSON handler logs `!ERROR:...` in place of such a value.
+
 ## Packages
 
 **Core**
@@ -129,7 +160,7 @@ Each `Do` returns `(done chan<- struct{}, stop <-chan struct{}, err error)`: clo
 |---------|-------|
 | `gate.go` | entry point: `NewSpotClient`/`NewFuturesClient`/… + WebSocket clients |
 | `client/` `request/` | REST + WebSocket client, options, HMAC-SHA512 signer, response decode, subscribe framework |
-| `common/` | constants, global tolerant `decimal.Decimal` JSON codec |
+| `common/` | constants, the `encoding/json/v2` codec: `format`-tagged `time.Time` fields, tolerant `decimal.Decimal` |
 
 **Products**
 
@@ -174,6 +205,7 @@ GATE_TEST_WRITE=1 go test ./spot/ -run TestSpotOrder  # live order tests (tiny, 
 
 ## CHANGE_LOG
 
+- **2026-09-29** — Requires Go 1.27: moved to the standard library's `encoding/json/v2` with the experimental `format` tag support (see [JSON and timestamps](#json-and-timestamps)). Every time field's format was re-checked against the official docs and, where reachable without credentials, the live API. Fixed `calculate_time` of the portfolio calculator (seconds, previously read as milliseconds; live-verified) and, from the docs' examples and third-party live captures of these private endpoints, uni-lending / unified-account / margin-uni loan and interest `create_time`/`update_time`, cross-margin repayment `create_time` and P2P `send_chat_message` `SRVTM` (milliseconds, previously read as seconds). Decoding now also accepts a timestamp quoted or bare and reads 10/13/16/19-digit values by width. Spot candlestick timestamps are now UTC. `spot.Candlestick` and `account.AccountDetail` now carry `format` tags too, so like every other time-bearing type they need `common.JSONMarshal` rather than `encoding/json` or `log/slog`.
 - **2026-07-08** — Aligned to v4.106.106. Added the `stock` package — Gate's traditional-finance stock spot module (`/api/v4/stock/*`, 16 endpoints): symbols & details, order book, supported exchanges, fee rate, user assets, orders (open/history/create/modify/cancel/cancel-all), positions & close, transactions & fund transfer. Public read structs reconciled against the live API (`stock/exchanges` requires signing despite being documented public).
 - **2026-07-07** — Aligned to v4.106.105. Added five new product packages — `crossex` (cross-exchange margin & contracts), `tradfi` (MT5 stock/forex CFDs), `p2p` (P2P merchant API), `otc` (OTC fiat/stablecoin + bank cards) and `bot` (grid/martingale strategy bots) — plus extensions across existing products: futures trailing & chase auto-orders, BBO orders, split-mode leverage / position mode, `contracts_all`, batch funding rates and positions-timerange; earn auto-invest, fixed-term and dual/staking additions; unified delta-neutral & quick-repayment; rebate partner endpoints; `account/main_keys`; `wallet/getLowCapExchangeList`; options order amend. 150 endpoints added (415 official endpoints now fully covered). Public and account-reachable endpoints reconciled against the live API; capability-gated products (crossex/tradfi/p2p/otc) verified for endpoint + signing correctness.
 - **2026-07-01** — Initial release. Full Gate APIv4 coverage: all REST products (spot, futures, delivery, options, margin, unified, wallet, account, sub-account, earn, loan, flash-swap, rebate) and spot/futures/delivery WebSocket public + private channels. Every public and private endpoint reconciled against the live API; order lifecycle (spot + futures, REST + WebSocket) verified with live trades.
