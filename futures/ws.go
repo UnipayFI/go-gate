@@ -201,6 +201,7 @@ type WsFuturesOrderBookUpdate struct {
 // SubscribeCandlesticksService -- futures.candlesticks channel. interval is e.g.
 // "10s", "1m", "1h"; the payload is [interval, contract]. Prefix the contract
 // with "mark_" / "index_" / "premium_index_" to stream those series instead.
+// Each push carries an array of candlesticks.
 type SubscribeCandlesticksService struct {
 	c        *FuturesWebSocketClient
 	interval string
@@ -211,20 +212,22 @@ func (c *FuturesWebSocketClient) NewSubscribeCandlesticksService(interval, contr
 	return &SubscribeCandlesticksService{c: c, interval: interval, contract: contract}
 }
 
-func (s *SubscribeCandlesticksService) Do(ctx context.Context, cb WsHandler[WsFuturesCandlestick]) (chan<- struct{}, <-chan struct{}, error) {
-	return request.Subscribe[WsFuturesCandlestick](ctx, s.c, "futures.candlesticks", []string{s.interval, s.contract}, false, cb)
+func (s *SubscribeCandlesticksService) Do(ctx context.Context, cb WsHandler[[]WsFuturesCandlestick]) (chan<- struct{}, <-chan struct{}, error) {
+	return request.Subscribe[[]WsFuturesCandlestick](ctx, s.c, "futures.candlesticks", []string{s.interval, s.contract}, false, cb)
 }
 
-// WsFuturesCandlestick is a candlestick push. Name ("n") is "<interval>_<contract>".
+// WsFuturesCandlestick is one candlestick of a push. Name ("n") is
+// "<interval>_<contract>"; WindowClose ("w") reports whether the window closed.
 type WsFuturesCandlestick struct {
-	Time   time.Time       `json:"t,format:unix"`
-	Volume int64           `json:"v"`
-	Close  decimal.Decimal `json:"c"`
-	High   decimal.Decimal `json:"h"`
-	Low    decimal.Decimal `json:"l"`
-	Open   decimal.Decimal `json:"o"`
-	Name   string          `json:"n"`
-	Amount decimal.Decimal `json:"a"`
+	Time        time.Time       `json:"t,format:unix"`
+	Volume      int64           `json:"v"`
+	Close       decimal.Decimal `json:"c"`
+	High        decimal.Decimal `json:"h"`
+	Low         decimal.Decimal `json:"l"`
+	Open        decimal.Decimal `json:"o"`
+	Name        string          `json:"n"`
+	Amount      decimal.Decimal `json:"a"`
+	WindowClose bool            `json:"w"`
 }
 
 // --- Private channels (require WithWebSocketAuth) ---
