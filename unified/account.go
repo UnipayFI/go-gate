@@ -505,7 +505,7 @@ type PortfolioOptionsOrder struct {
 type PortfolioMargin struct {
 	MaintainMarginTotal decimal.Decimal     `json:"maintain_margin_total"`
 	InitialMarginTotal  decimal.Decimal     `json:"initial_margin_total"`
-	CalculateTime       time.Time           `json:"calculate_time,format:unixmilli"`
+	CalculateTime       time.Time           `json:"calculate_time,format:unix"`
 	RiskUnit            []PortfolioRiskUnit `json:"risk_unit"`
 }
 

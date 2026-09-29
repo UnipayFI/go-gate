@@ -126,7 +126,7 @@ func (s *SendChatMessageService) Do(ctx context.Context) (*P2PResponse[P2PSendCh
 
 // P2PSendChatResult is the result of sending a chat message.
 type P2PSendChatResult struct {
-	SRVTM          time.Time `json:"SRVTM,format:unix"`
+	SRVTM          time.Time `json:"SRVTM,format:unixmilli"`
 	TxID           int64     `json:"txid"`
 	ConversationID string    `json:"conversation_id"`
 	MsgType        int       `json:"msg_type"`

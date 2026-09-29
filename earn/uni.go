@@ -105,8 +105,8 @@ type UserUniLend struct {
 	MinRate            decimal.Decimal `json:"min_rate"`
 	InterestStatus     string          `json:"interest_status"`
 	ReinvestLeftAmount decimal.Decimal `json:"reinvest_left_amount"`
-	CreateTime         time.Time       `json:"create_time,format:unix"`
-	UpdateTime         time.Time       `json:"update_time,format:unix"`
+	CreateTime         time.Time       `json:"create_time,format:unixmilli"`
+	UpdateTime         time.Time       `json:"update_time,format:unixmilli"`
 }
 
 // CreateUniLendService -- POST /api/v4/earn/uni/lends (private)
@@ -226,7 +226,7 @@ type UniLendRecord struct {
 	LastLentAmount   decimal.Decimal `json:"last_lent_amount"`
 	LastFrozenAmount decimal.Decimal `json:"last_frozen_amount"`
 	Type             string          `json:"type"`
-	CreateTime       time.Time       `json:"create_time,format:unix"`
+	CreateTime       time.Time       `json:"create_time,format:unixmilli"`
 }
 
 // GetUniInterestService -- GET /api/v4/earn/uni/interests/{currency} (private)
@@ -311,7 +311,7 @@ type UniInterestRecord struct {
 	ActualRate     decimal.Decimal `json:"actual_rate"`
 	Interest       decimal.Decimal `json:"interest"`
 	InterestStatus string          `json:"interest_status"`
-	CreateTime     time.Time       `json:"create_time,format:unix"`
+	CreateTime     time.Time       `json:"create_time,format:unixmilli"`
 }
 
 // GetUniInterestStatusService -- GET /api/v4/earn/uni/interest_status/{currency} (private)

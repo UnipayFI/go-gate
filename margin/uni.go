@@ -140,8 +140,8 @@ type UniLoan struct {
 	CurrencyPair string          `json:"currency_pair"`
 	Amount       decimal.Decimal `json:"amount"`
 	Type         string          `json:"type"`
-	CreateTime   time.Time       `json:"create_time,format:unix"`
-	UpdateTime   time.Time       `json:"update_time,format:unix"`
+	CreateTime   time.Time       `json:"create_time,format:unixmilli"`
+	UpdateTime   time.Time       `json:"update_time,format:unixmilli"`
 }
 
 // CreateUniLoanService -- POST /api/v4/margin/uni/loans (private)
@@ -232,7 +232,7 @@ type UniLoanRecord struct {
 	CurrencyPair string          `json:"currency_pair"`
 	Currency     string          `json:"currency"`
 	Amount       decimal.Decimal `json:"amount"`
-	CreateTime   time.Time       `json:"create_time,format:unix"`
+	CreateTime   time.Time       `json:"create_time,format:unixmilli"`
 }
 
 // ListUniLoanInterestRecordsService -- GET /api/v4/margin/uni/interest_records (private)
@@ -300,7 +300,7 @@ type UniLoanInterestRecord struct {
 	Interest     decimal.Decimal `json:"interest"`
 	Status       int             `json:"status"`
 	Type         string          `json:"type"`
-	CreateTime   time.Time       `json:"create_time,format:unix"`
+	CreateTime   time.Time       `json:"create_time,format:unixmilli"`
 }
 
 // GetUniBorrowableService -- GET /api/v4/margin/uni/borrowable (private)

@@ -474,7 +474,7 @@ func (s *ListCrossMarginRepaymentsService) Do(ctx context.Context) ([]CrossMargi
 // CrossMarginRepayment is a single cross-margin repayment record.
 type CrossMarginRepayment struct {
 	ID            string          `json:"id"`
-	CreateTime    time.Time       `json:"create_time,format:unix"`
+	CreateTime    time.Time       `json:"create_time,format:unixmilli"`
 	LoanID        string          `json:"loan_id"`
 	Currency      string          `json:"currency"`
 	Principal     decimal.Decimal `json:"principal"`
