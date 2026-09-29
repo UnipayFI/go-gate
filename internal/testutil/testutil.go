@@ -113,6 +113,12 @@ func Tolerable(t *testing.T, label string, err error) bool {
 			t.Logf("%s: placeholder id rejected (%s) — endpoint+signing OK", label, apiErr.Message)
 			return true
 		}
+		// P2P merchant endpoints answer accounts that are not certified
+		// merchants with a business error instead of a capability label.
+		if strings.Contains(apiErr.Message, "Certified Merchant") {
+			t.Logf("%s: account is not a P2P merchant (%s) — endpoint+signing OK", label, apiErr.Message)
+			return true
+		}
 	}
 	return false
 }
