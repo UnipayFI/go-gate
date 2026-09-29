@@ -51,11 +51,15 @@ func (s *SubscribeTickersService) Do(ctx context.Context, cb WsHandler[[]WsFutur
 }
 
 // WsFuturesTicker is a futures ticker push. Note the volume_24_usd / volume_24_btc
-// keys drop the "h" that the REST ticker uses.
+// keys drop the "h" that the REST ticker uses. "t" is a millisecond timestamp;
+// funding_next_apply is in Unix seconds and change_from names the window of
+// change_price / change_percentage (e.g. "24h").
 type WsFuturesTicker struct {
 	Contract              string          `json:"contract"`
 	Last                  decimal.Decimal `json:"last"`
 	ChangePercentage      decimal.Decimal `json:"change_percentage"`
+	ChangePrice           decimal.Decimal `json:"change_price"`
+	ChangeFrom            string          `json:"change_from"`
 	TotalSize             decimal.Decimal `json:"total_size"`
 	Volume24h             decimal.Decimal `json:"volume_24h"`
 	Volume24hBase         decimal.Decimal `json:"volume_24h_base"`
@@ -66,10 +70,15 @@ type WsFuturesTicker struct {
 	MarkPrice             decimal.Decimal `json:"mark_price"`
 	FundingRate           decimal.Decimal `json:"funding_rate"`
 	FundingRateIndicative decimal.Decimal `json:"funding_rate_indicative"`
+	FundingInterval       int             `json:"funding_interval"`
+	FundingNextApply      time.Time       `json:"funding_next_apply,format:unix"`
+	FundingOffset         int             `json:"funding_offset"`
 	IndexPrice            decimal.Decimal `json:"index_price"`
 	QuantoBaseRate        decimal.Decimal `json:"quanto_base_rate"`
 	Low24h                decimal.Decimal `json:"low_24h"`
 	High24h               decimal.Decimal `json:"high_24h"`
+	PriceType             string          `json:"price_type"`
+	Time                  time.Time       `json:"t,format:unixmilli"`
 }
 
 // SubscribeTradesService -- futures.trades channel (public tick-by-tick fills).
@@ -144,10 +153,12 @@ func (s *SubscribeOrderBookService) Do(ctx context.Context, cb WsHandler[WsFutur
 
 // WsFuturesOrderBook is a limited-depth order-book snapshot. "t" is a
 // millisecond timestamp; rows are {p, s} objects (unlike spot's [price, size]).
+// Level ("l") is the snapshot depth, e.g. "20".
 type WsFuturesOrderBook struct {
 	ID       int64                    `json:"id"`
 	Time     time.Time                `json:"t,format:unixmilli"`
 	Contract string                   `json:"contract"`
+	Level    string                   `json:"l"`
 	Asks     []WsFuturesOrderBookItem `json:"asks"`
 	Bids     []WsFuturesOrderBookItem `json:"bids"`
 }
@@ -188,10 +199,11 @@ func (s *SubscribeOrderBookUpdateService) Do(ctx context.Context, cb WsHandler[W
 }
 
 // WsFuturesOrderBookUpdate is an incremental order-book change. "t" is a
-// millisecond timestamp.
+// millisecond timestamp; Level ("l") is the depth the updates maintain.
 type WsFuturesOrderBookUpdate struct {
 	Time     time.Time                `json:"t,format:unixmilli"`
 	Contract string                   `json:"s"`
+	Level    string                   `json:"l"`
 	FirstID  int64                    `json:"U"`
 	LastID   int64                    `json:"u"`
 	Asks     []WsFuturesOrderBookItem `json:"a"`

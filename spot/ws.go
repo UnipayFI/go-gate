@@ -74,8 +74,12 @@ func (s *SubscribeTradesService) Do(ctx context.Context, cb WsHandler[WsPublicTr
 // CurrencyPair stays the nominal subscribed market while Stock and Money name
 // the assets the trade actually used; TradeMode is 0 for a regular book,
 // 1 quote-side unified, 2 base-side unified and 3 unified on both sides.
+// IDMarket is the trade ID within that one market and Range the "start-end" span
+// of market trade IDs the push covers.
 type WsPublicTrade struct {
 	ID           int64           `json:"id"`
+	IDMarket     int64           `json:"id_market"`
+	Range        string          `json:"range"`
 	CreateTime   time.Time       `json:"create_time,format:unix"`
 	CreateTimeMs time.Time       `json:"create_time_ms,string,format:unixmilli"`
 	Side         Side            `json:"side"`
@@ -157,12 +161,14 @@ func (s *SubscribeOrderBookUpdateService) Do(ctx context.Context, cb WsHandler[W
 	return request.Subscribe[WsDepthUpdate](ctx, s.c, "spot.order_book_update", []string{s.pair, s.interval}, false, cb)
 }
 
-// WsDepthUpdate is an incremental order-book change.
+// WsDepthUpdate is an incremental order-book change. Level ("l") is the depth
+// the updates maintain, e.g. "100".
 type WsDepthUpdate struct {
 	Time         time.Time           `json:"t,format:unixmilli"`
 	Event        string              `json:"e"`
 	EventTime    time.Time           `json:"E,format:unix"`
 	CurrencyPair string              `json:"s"`
+	Level        string              `json:"l"`
 	FirstID      int64               `json:"U"`
 	LastID       int64               `json:"u"`
 	Bids         [][]decimal.Decimal `json:"b"`
@@ -186,11 +192,13 @@ func (s *SubscribeOrderBookService) Do(ctx context.Context, cb WsHandler[WsDepth
 	return request.Subscribe[WsDepthSnapshot](ctx, s.c, "spot.order_book", []string{s.pair, s.level, s.interval}, false, cb)
 }
 
-// WsDepthSnapshot is a limited-depth order-book snapshot.
+// WsDepthSnapshot is a limited-depth order-book snapshot. Level ("l") is the
+// snapshot depth, e.g. "5".
 type WsDepthSnapshot struct {
 	Time         time.Time           `json:"t,format:unixmilli"`
 	LastUpdateID int64               `json:"lastUpdateId"`
 	CurrencyPair string              `json:"s"`
+	Level        string              `json:"l"`
 	Bids         [][]decimal.Decimal `json:"bids"`
 	Asks         [][]decimal.Decimal `json:"asks"`
 }

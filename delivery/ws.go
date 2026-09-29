@@ -69,6 +69,7 @@ type WsDeliveryTicker struct {
 	QuantoBaseRate        decimal.Decimal `json:"quanto_base_rate"`
 	Low24h                decimal.Decimal `json:"low_24h"`
 	High24h               decimal.Decimal `json:"high_24h"`
+	PriceType             string          `json:"price_type"`
 }
 
 // SubscribeTradesService -- futures.trades channel (public tick-by-tick fills).
