@@ -661,15 +661,15 @@ type FuturesTrailDetailResponse = FuturesAutoOrderEnvelope[FuturesTrailDetailDat
 // FuturesTrailChangeLogResponse is the trail-order change-log envelope (data.change_log).
 type FuturesTrailChangeLogResponse = FuturesAutoOrderEnvelope[FuturesTrailChangeLogData]
 
-// FuturesTrailOrder is a trailing (trail) auto order and its live state. The
-// timestamps are Unix seconds sent as quoted integers; the *_precise fields
-// carry the same times as high-precision "seconds.microseconds" strings.
-// price_offset is a callback ratio or price distance that may be a percentage
-// (e.g. "0.1%").
+// FuturesTrailOrder is a trailing (trail) auto order and its live state. Gate
+// sends the IDs and timestamps as quoted integers; the timestamps are Unix
+// seconds ("0" until the event happens) and the *_precise fields carry the same
+// times in microseconds (e.g. "1790663530386000"). price_offset is a callback
+// ratio or price distance that may be a percentage (e.g. "0.1%").
 type FuturesTrailOrder struct {
-	ID                 int64           `json:"id"`
-	UserID             int64           `json:"user_id"`
-	User               int64           `json:"user"`
+	ID                 int64           `json:"id,string"`
+	UserID             int64           `json:"user_id,string"`
+	User               int64           `json:"user,string"`
 	Contract           string          `json:"contract"`
 	Settle             string          `json:"settle"`
 	Amount             decimal.Decimal `json:"amount"`
@@ -690,7 +690,7 @@ type FuturesTrailOrder struct {
 	SuborderText       string          `json:"suborder_text"`
 	IsDualMode         bool            `json:"is_dual_mode"`
 	TriggerPrice       decimal.Decimal `json:"trigger_price"`
-	SuborderID         int64           `json:"suborder_id"`
+	SuborderID         int64           `json:"suborder_id,string"`
 	SideLabel          string          `json:"side_label"`
 	OriginalStatus     int             `json:"original_status"`
 	Status             OrderStatus     `json:"status"`
@@ -706,6 +706,7 @@ type FuturesTrailOrder struct {
 	PositionMode       string          `json:"position_mode"`
 	ErrorLabel         string          `json:"error_label"`
 	Leverage           decimal.Decimal `json:"leverage"`
+	DefaultLeverage    decimal.Decimal `json:"default_leverage"`
 }
 
 // FuturesTrailChangeLog is one create/modify record of a trail order. updated_at
