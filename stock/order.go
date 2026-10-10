@@ -42,8 +42,10 @@ type StockOrdersResponse struct {
 }
 
 // StockOrder is a single open order. side is 1=sell, 2=buy; price_type is
-// "market" or "limit"; time_setup / time_update are integer-second Unix
-// timestamps.
+// "market" or "limit"; trade_mode takes the same values as in StockSymbol;
+// status is 0=unknown, 1=new, 2=partially filled, 3=filled, 4=canceled,
+// 5=order rejected, 6=cancellation rejected, 7=update succeeded, 8=update
+// rejected; time_setup / time_update are integer-second Unix timestamps.
 type StockOrder struct {
 	OrderID             string          `json:"order_id"`
 	Symbol              string          `json:"symbol"`
@@ -211,6 +213,11 @@ type StockOrderHistoryResponse struct {
 }
 
 // StockOrderHistory is a single historical order. side is 1=sell, 2=buy;
+// status takes the same values as in StockOrder; finish_as is 0=unknown, 1=no
+// quote found, 2=no match found, 3=trigger price exceeded, 4=order value over
+// the limit, 5=unknown rejection, 6=unknown cancellation, 7=canceled by user,
+// 8=time in force expired, 9=not tradable in the current session,
+// 13=canceled due to corporate action;
 // time_in_force only ever reports "day"; time_setup / time_done are
 // integer-second Unix timestamps; status_detail is null unless the server
 // attaches a title/message; avg_fill_price is null until the order fills.

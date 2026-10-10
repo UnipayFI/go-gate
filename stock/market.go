@@ -73,8 +73,10 @@ type StockSymbolsResponse struct {
 // ETV (exchange-traded products), PFD (preferred stock), ETS (exchange-traded
 // securities), ETN (exchange-traded notes) or FUND; asset_type is STOCK or ETF;
 // trade_mode is the current session trading mode (0=disabled, 1=buy only,
-// 2=sell only, 4=buy and sell); order_fill_timing is 1=immediate, 2=after
-// pre-market opens, 3=after regular session opens.
+// 2=sell only, 4=buy and sell; LP trading suspended: 5=manual suspension,
+// 6=strategy exception, 7=stock halt, 8=stock circuit breaker halt);
+// order_fill_timing is 1=immediate, 2=after pre-market opens, 3=after regular
+// session opens.
 type StockSymbol struct {
 	Symbol                 string            `json:"symbol"`
 	Exchange               string            `json:"exchange"`
@@ -162,7 +164,8 @@ type StockSymbolDetailsResponse struct {
 // (common stock), ETF, ADRC or ADR (depositary receipts for foreign companies
 // listed in the U.S.), ETV (exchange-traded products), PFD (preferred stock),
 // ETS (exchange-traded securities), ETN (exchange-traded notes) or FUND;
-// asset_type is STOCK or ETF.
+// asset_type is STOCK or ETF; trade_mode takes the same values as in
+// StockSymbol.
 type StockSymbolDetail struct {
 	Symbol                 string            `json:"symbol"`
 	Exchange               string            `json:"exchange"`
