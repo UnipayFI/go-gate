@@ -123,7 +123,7 @@ func (s *ListFuturesAccountBookService) SetTo(to time.Time) *ListFuturesAccountB
 }
 
 // SetType filters by change type (dnw, pnl, fee, refr, fund, point_dnw,
-// point_fee, point_refr, bonus_offset).
+// point_fee, point_refr, bonus_offset, dividend).
 func (s *ListFuturesAccountBookService) SetType(changeType string) *ListFuturesAccountBookService {
 	s.params["type"] = changeType
 	return s
@@ -138,7 +138,8 @@ func (s *ListFuturesAccountBookService) Do(ctx context.Context) ([]FuturesAccoun
 	return *resp, nil
 }
 
-// FuturesAccountBook is a single balance-change record.
+// FuturesAccountBook is a single balance-change record; type takes the same
+// values as the SetType filter.
 type FuturesAccountBook struct {
 	Time     time.Time       `json:"time,format:unix"`
 	Change   decimal.Decimal `json:"change"`
