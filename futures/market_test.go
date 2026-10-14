@@ -42,6 +42,16 @@ func TestFuturesMarket(t *testing.T) {
 		map[string]string{"contract": "BTC_USDT", "limit": "2", "with_id": "true"}, false)
 	testutil.AssertCovers(t, "futures/order_book", raw, ob)
 
+	// ListFuturesRPIOrderBook
+	rpi, err := c.NewListFuturesRPIOrderBookService(SettleUSDT, "BTC_USDT").SetLimit(2).SetWithID(true).Do(cx)
+	if err != nil {
+		t.Fatalf("rpi order book: %v", err)
+	}
+	t.Logf("rpi order book: id=%d current=%s asks=%d bids=%d", rpi.ID, rpi.Current, len(rpi.Asks), len(rpi.Bids))
+	raw = testutil.FetchRawGet(t, c, cx, "/api/v4/futures/usdt/rpi_order_book",
+		map[string]string{"contract": "BTC_USDT", "limit": "2", "with_id": "true"}, false)
+	testutil.AssertCovers(t, "futures/rpi_order_book", raw, rpi)
+
 	// ListFuturesTrades
 	trades, err := c.NewListFuturesTradesService(SettleUSDT, "BTC_USDT").SetLimit(2).Do(cx)
 	if err != nil {

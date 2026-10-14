@@ -168,7 +168,7 @@ and `log/slog`'s JSON handler logs `!ERROR:...` in place of such a value.
 | Package | Scope |
 |---------|-------|
 | `spot` | currencies, currency-pairs, tickers, order book (+ RPI), trades, candlesticks, fee, accounts, account-book, orders (single/batch/amend/cancel/countdown), my-trades, price-triggered orders + spot WebSocket |
-| `futures` | contracts (+delisted), order book, trades, candlesticks, premium index, tickers, funding rate (single + batch), insurance, contract stats, index constituents, liq orders, risk-limit tiers, accounts, positions (single + dual-mode + history + split-mode leverage), position mode, orders (single/batch/amend/price-triggered/BBO), trailing & chase auto-orders, my-trades + futures WebSocket |
+| `futures` | contracts (+delisted), order book (+ RPI), trades, candlesticks, premium index, tickers, funding rate (single + batch), insurance, contract stats, index constituents, liq orders, risk-limit tiers, accounts, positions (single + dual-mode + history + split-mode leverage), position mode, orders (single/batch/amend/price-triggered/BBO), trailing & chase auto-orders, my-trades + futures WebSocket |
 | `delivery` | dated-futures market, accounts, positions, orders, settlements, risk-limit tiers, price-triggered orders + delivery WebSocket |
 | `options` | underlyings, expirations, contracts, settlements, order book, tickers, candlesticks, trades, accounts, positions, orders, MMP |
 | `margin` | isolated + cross margin, funding accounts, auto-repay, margin tiers, unified-margin (uni) lending |

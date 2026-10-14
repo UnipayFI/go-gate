@@ -174,6 +174,44 @@ type FuturesOrderBookEntry struct {
 	S int64           `json:"s"`
 }
 
+// ListFuturesRPIOrderBookService -- GET /api/v4/futures/{settle}/rpi_order_book
+//
+// Returns the RPI (Retail Price Improvement) order book for a contract. Bids
+// are sorted by price high-to-low, asks low-to-high; the payload has the same
+// shape as the regular order book.
+type ListFuturesRPIOrderBookService struct {
+	c      *FuturesClient
+	settle Settle
+	params map[string]string
+}
+
+func (c *FuturesClient) NewListFuturesRPIOrderBookService(settle Settle, contract string) *ListFuturesRPIOrderBookService {
+	return &ListFuturesRPIOrderBookService{c: c, settle: settle, params: map[string]string{"contract": contract}}
+}
+
+// SetInterval aggregates price levels by the given tick (e.g. "0", "0.1").
+func (s *ListFuturesRPIOrderBookService) SetInterval(interval string) *ListFuturesRPIOrderBookService {
+	s.params["interval"] = interval
+	return s
+}
+
+// SetLimit caps the number of levels returned per side.
+func (s *ListFuturesRPIOrderBookService) SetLimit(limit int) *ListFuturesRPIOrderBookService {
+	s.params["limit"] = strconv.Itoa(limit)
+	return s
+}
+
+// SetWithID includes the order-book update id in the response when true.
+func (s *ListFuturesRPIOrderBookService) SetWithID(withID bool) *ListFuturesRPIOrderBookService {
+	s.params["with_id"] = strconv.FormatBool(withID)
+	return s
+}
+
+func (s *ListFuturesRPIOrderBookService) Do(ctx context.Context) (*FuturesOrderBook, error) {
+	req := request.Get(ctx, s.c, "/api/v4/futures/"+string(s.settle)+"/rpi_order_book", s.params)
+	return request.Do[FuturesOrderBook](req)
+}
+
 // ListFuturesTradesService -- GET /api/v4/futures/{settle}/trades
 //
 // Returns recent public trades for a contract.
