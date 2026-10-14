@@ -60,6 +60,44 @@ type OrderBook struct {
 	Bids    [][]decimal.Decimal `json:"bids"`
 }
 
+// ListRPIOrderBookService -- GET /api/v4/spot/rpi_order_book
+//
+// Returns the RPI (Retail Price Improvement) order book for a pair: bids sorted
+// high-to-low and asks low-to-high. The payload has the same shape as the
+// regular order book.
+type ListRPIOrderBookService struct {
+	c      *SpotClient
+	params map[string]string
+}
+
+func (c *SpotClient) NewListRPIOrderBookService(currencyPair string) *ListRPIOrderBookService {
+	return &ListRPIOrderBookService{c: c, params: map[string]string{"currency_pair": currencyPair}}
+}
+
+// SetInterval sets the price precision used to aggregate depth levels
+// ("0" means no aggregation).
+func (s *ListRPIOrderBookService) SetInterval(interval string) *ListRPIOrderBookService {
+	s.params["interval"] = interval
+	return s
+}
+
+// SetLimit caps the number of depth levels returned per side.
+func (s *ListRPIOrderBookService) SetLimit(limit int) *ListRPIOrderBookService {
+	s.params["limit"] = strconv.Itoa(limit)
+	return s
+}
+
+// SetWithID requests the order book update ID (populates the id field).
+func (s *ListRPIOrderBookService) SetWithID(withID bool) *ListRPIOrderBookService {
+	s.params["with_id"] = strconv.FormatBool(withID)
+	return s
+}
+
+func (s *ListRPIOrderBookService) Do(ctx context.Context) (*OrderBook, error) {
+	req := request.Get(ctx, s.c, "/api/v4/spot/rpi_order_book", s.params)
+	return request.Do[OrderBook](req)
+}
+
 // ListTradesService -- GET /api/v4/spot/trades
 //
 // Returns recent market trades for a pair, most recent first.

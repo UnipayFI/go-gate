@@ -23,6 +23,16 @@ func TestSpotDepth(t *testing.T) {
 		map[string]string{"currency_pair": "BTC_USDT", "limit": "5", "with_id": "true"}, false)
 	testutil.AssertCovers(t, "spot/order_book", raw, ob)
 
+	// RPI order book: same shape as the regular order book.
+	rpi, err := c.NewListRPIOrderBookService("BTC_USDT").SetLimit(5).SetWithID(true).Do(cx)
+	if err != nil {
+		t.Fatalf("rpi order book: %v", err)
+	}
+	t.Logf("rpi order book id=%d current=%s asks=%d bids=%d", rpi.ID, rpi.Current, len(rpi.Asks), len(rpi.Bids))
+	raw = testutil.FetchRawGet(t, c, cx, "/api/v4/spot/rpi_order_book",
+		map[string]string{"currency_pair": "BTC_USDT", "limit": "5", "with_id": "true"}, false)
+	testutil.AssertCovers(t, "spot/rpi_order_book", raw, rpi)
+
 	// Recent market trades.
 	trades, err := c.NewListTradesService("BTC_USDT").SetLimit(2).Do(cx)
 	if err != nil {
