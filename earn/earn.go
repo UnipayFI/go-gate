@@ -92,7 +92,9 @@ func (s *ListDualInvestmentPlansService) Do(ctx context.Context) ([]DualInvestme
 	return *resp, nil
 }
 
-// DualInvestmentPlan is a single Dual Investment product and its terms.
+// DualInvestmentPlan is a single Dual Investment product and its terms, for
+// both crypto and stock products. Type is "call" (sell high) or "put" (buy
+// low).
 type DualInvestmentPlan struct {
 	ID               int64           `json:"id"`
 	InstrumentName   string          `json:"instrument_name"`

@@ -176,7 +176,7 @@ and `log/slog`'s JSON handler logs `!ERROR:...` in place of such a value.
 | `wallet` | deposit address, transfers, sub-account transfers, deposits/withdrawals, balances, trade fee, total balance, dust conversion, **withdrawals** |
 | `account` | account detail, rate limit, STP groups, debit fee, main-account API keys |
 | `subaccount` | sub-account create/query, API keys, lock/unlock |
-| `earn` | dual investment (+ balance / refund / reinvest), structured products, staking (ETH2 + on-chain assets / awards / orders), auto-invest plans, fixed-term products & subscriptions, uni lending |
+| `earn` | dual investment, crypto + stock (+ balance / refund / reinvest), structured products, staking (ETH2 + on-chain assets / awards / orders), auto-invest plans, fixed-term products & subscriptions, uni lending |
 | `loan` | collateral loan + multi-collateral loan |
 | `flashswap` | flash-swap currency pairs, preview, orders |
 | `rebate` | agency / partner / broker commission & transaction history, partner applications / eligibility |
