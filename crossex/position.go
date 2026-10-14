@@ -341,6 +341,53 @@ type CrossexMarginPosition struct {
 	UpdateTime        time.Time       `json:"update_time,string,format:unixmilli"`
 }
 
+// ListSecurityPositionsService -- GET /api/v4/crossex/security_positions (private)
+//
+// Returns the account's stock and ETF positions.
+type ListSecurityPositionsService struct {
+	c      *CrossexClient
+	params map[string]string
+}
+
+func (c *CrossexClient) NewListSecurityPositionsService() *ListSecurityPositionsService {
+	return &ListSecurityPositionsService{c: c, params: map[string]string{}}
+}
+
+// SetSymbol narrows the result to a single stock or ETF trading pair.
+func (s *ListSecurityPositionsService) SetSymbol(symbol string) *ListSecurityPositionsService {
+	s.params["symbol"] = symbol
+	return s
+}
+
+// SetExchangeType narrows the result to a single stock market (US, HK, KR or JP).
+func (s *ListSecurityPositionsService) SetExchangeType(exchangeType string) *ListSecurityPositionsService {
+	s.params["exchange_type"] = exchangeType
+	return s
+}
+
+func (s *ListSecurityPositionsService) Do(ctx context.Context) ([]CrossexSecurityPosition, error) {
+	req := request.Get(ctx, s.c, "/api/v4/crossex/security_positions", s.params).WithSign()
+	resp, err := request.Do[[]CrossexSecurityPosition](req)
+	if err != nil {
+		return nil, err
+	}
+	return *resp, nil
+}
+
+// CrossexSecurityPosition is one stock or ETF position. Prices, position value
+// and unrealized PnL are in the listing market currency: USD for US, HKD for
+// HK, KRW for KR and JPY for JP.
+type CrossexSecurityPosition struct {
+	UserID           string          `json:"user_id"`
+	Symbol           string          `json:"symbol"`
+	Price            decimal.Decimal `json:"price"`
+	EntryPrice       decimal.Decimal `json:"entry_price"`
+	DilutedCostPrice decimal.Decimal `json:"diluted_cost_price"`
+	UPnL             decimal.Decimal `json:"upnl"`
+	PositionQty      decimal.Decimal `json:"position_qty"`
+	PositionValue    decimal.Decimal `json:"position_value"`
+}
+
 // GetADLRankService -- GET /api/v4/crossex/adl_rank (private)
 //
 // Returns the account's ADL (auto-deleveraging) reduction ranking for a pair.

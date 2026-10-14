@@ -180,7 +180,7 @@ and `log/slog`'s JSON handler logs `!ERROR:...` in place of such a value.
 | `loan` | collateral loan + multi-collateral loan |
 | `flashswap` | flash-swap currency pairs, preview, orders |
 | `rebate` | agency / partner / broker commission & transaction history, partner applications / eligibility |
-| `crossex` | cross-exchange margin & contract trading: accounts, orders, positions & leverage, transfers, convert (flash-swap), rules & fees |
+| `crossex` | cross-exchange margin, contract & stock/ETF trading: accounts, orders, positions & leverage, stock/ETF positions, transfers, convert (flash-swap), rules & fees |
 | `tradfi` | TradFi CFDs via MT5: symbols / categories / klines / tickers, orders, positions, user & MT5 account, fund transactions |
 | `stock` | traditional-finance stock spot: symbols / details, order book, exchanges, fee rate, user assets, orders, positions, transactions, fund transfer |
 | `p2p` | P2P merchant API: account & payment methods, ads, transactions, chat |

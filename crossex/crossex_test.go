@@ -323,6 +323,28 @@ func TestCrossex(t *testing.T) {
 		testutil.AssertCovers(t, "crossex/margin_positions", raw, got)
 	})
 
+	t.Run("ListSecurityPositions", func(t *testing.T) {
+		c := testClient(t)
+		cx := testutil.Ctx(t)
+		if err := c.SyncServerTime(cx); err != nil {
+			t.Fatalf("sync time: %v", err)
+		}
+		got, err := c.NewListSecurityPositionsService().Do(cx)
+		if err != nil {
+			if testutil.Tolerable(t, "crossex/security_positions", err) {
+				return
+			}
+			t.Fatalf("list security positions: %v", err)
+		}
+		t.Logf("security positions=%d", len(got))
+		if len(got) == 0 {
+			t.Log("no security positions")
+			return
+		}
+		raw := testutil.FetchRawGet(t, c, cx, "/api/v4/crossex/security_positions", map[string]string{}, true)
+		testutil.AssertCovers(t, "crossex/security_positions", raw, got)
+	})
+
 	t.Run("GetADLRank", func(t *testing.T) {
 		c := testClient(t)
 		cx := testutil.Ctx(t)
