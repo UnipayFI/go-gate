@@ -36,8 +36,11 @@ func (s *QuerySymbolsService) Do(ctx context.Context) ([]CrossexSymbol, error) {
 	return *resp, nil
 }
 
-// CrossexSymbol is a single cross-exchange trading-pair rule. delist_time is a
-// millisecond Unix timestamp (0 means not delisted).
+// CrossexSymbol is a single cross-exchange trading-pair rule. Stock and ETF
+// symbols use {market}_{STOCK|ETF}_{security_code}_USDT (e.g.
+// US_STOCK_AAPL_USDT, HK_STOCK_00700_USDT, US_ETF_SPY_USDT), with the listing
+// market (US, HK, KR or JP) as exchange_type and STOCK or ETF as business_type.
+// delist_time is a millisecond Unix timestamp (0 means not delisted).
 type CrossexSymbol struct {
 	Symbol          string          `json:"symbol"`
 	ExchangeType    string          `json:"exchange_type"`
@@ -60,6 +63,9 @@ type CrossexSymbol struct {
 	// SupportCross reports whether the symbol supports cross-margin order
 	// placement ("true" if supported, "false" otherwise).
 	SupportCross string `json:"support_cross"`
+	// Tag is the security description for stocks and ETFs (e.g. "Apple Inc."),
+	// DEX information for Hyperliquid, and empty for other businesses.
+	Tag string `json:"tag"`
 }
 
 // QueryRiskLimitsService -- GET /api/v4/crossex/rule/risk_limits (private)
