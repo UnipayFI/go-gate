@@ -13,7 +13,10 @@ import (
 //
 // Places a single cross-exchange order. symbol is the venue-qualified pair
 // {Exchange}_{Business}_{Base}_{Counter} (e.g. BINANCE_SPOT_BTC_USDT,
-// LIGHTER_FUTURE_BTC_USDC) and side is BUY or SELL.
+// LIGHTER_FUTURE_BTC_USDC, US_STOCK_AAPL_USDT) and side is BUY or SELL. Stock
+// and ETF orders require cross-exchange account mode, GTC and qty (quote_qty is
+// not supported), are priced in the listing market currency (USD, HKD, KRW or
+// JPY), and are additionally limited to one request per second per user.
 type CreateOrderService struct {
 	c    *CrossexClient
 	body map[string]any
@@ -39,24 +42,28 @@ func (s *CreateOrderService) SetType(orderType string) *CreateOrderService {
 }
 
 // SetTimeInForce sets the time in force (GTC default, IOC, FOK, POC, RPI).
+// Stocks and ETFs only support GTC.
 func (s *CreateOrderService) SetTimeInForce(tif string) *CreateOrderService {
 	s.body["time_in_force"] = tif
 	return s
 }
 
-// SetQty sets the order quantity in the base currency.
+// SetQty sets the order quantity in the base currency. Required for stocks and
+// ETFs.
 func (s *CreateOrderService) SetQty(qty decimal.Decimal) *CreateOrderService {
 	s.body["qty"] = qty.String()
 	return s
 }
 
-// SetPrice sets the limit order price (required for limit orders).
+// SetPrice sets the limit order price (required for limit orders). Stocks and
+// ETFs are priced in the listing market currency (USD, HKD, KRW or JPY).
 func (s *CreateOrderService) SetPrice(price decimal.Decimal) *CreateOrderService {
 	s.body["price"] = price.String()
 	return s
 }
 
-// SetQuoteQty sets the order quote quantity (required for spot/margin market buys).
+// SetQuoteQty sets the order quote quantity (required for spot/margin market
+// buys). Not supported for stocks and ETFs.
 func (s *CreateOrderService) SetQuoteQty(quoteQty decimal.Decimal) *CreateOrderService {
 	s.body["quote_qty"] = quoteQty.String()
 	return s
@@ -248,7 +255,9 @@ func (s *ListHistoryOrdersService) Do(ctx context.Context) ([]CrossexOrder, erro
 
 // CrossexOrder is a cross-exchange order and its live state. create_time and
 // update_time are millisecond Unix timestamps. reduce_only is a string ("true"
-// or "false"), matching the Gate wire format.
+// or "false"), matching the Gate wire format. For stocks and ETFs, exchange_type
+// is the listing market (US, HK, KR or JP), business_type is STOCK or ETF, and
+// prices and amounts are in the listing market currency (USD, HKD, KRW or JPY).
 type CrossexOrder struct {
 	UserID             string          `json:"user_id"`
 	OrderID            string          `json:"order_id"`
@@ -375,7 +384,8 @@ type CrossexCancelResult struct {
 }
 
 // CrossexTrade is one cross-exchange trade fill. create_time is a millisecond
-// Unix timestamp.
+// Unix timestamp. Stock and ETF fill prices are in the listing market currency
+// (USD, HKD, KRW or JPY).
 type CrossexTrade struct {
 	UserID        string          `json:"user_id"`
 	TransactionID string          `json:"transaction_id"`

@@ -140,7 +140,8 @@ func (s *ListAccountBookService) SetCoin(coin string) *ListAccountBookService {
 	return s
 }
 
-// SetStatementType filters by bill entry type (e.g. TRANSACTION, TRADING_FEE).
+// SetStatementType filters by bill entry type (e.g. TRANSACTION, TRADING_FEE,
+// SECURITY_DIVIDEND, SECURITY_CORPORATE_ACTION).
 func (s *ListAccountBookService) SetStatementType(statementType string) *ListAccountBookService {
 	s.params["statement_type"] = statementType
 	return s
@@ -172,7 +173,9 @@ func (s *ListAccountBookService) Do(ctx context.Context) ([]CrossexAccountBookRe
 // outflows. business_id depends on statement_type: the order ID for TRANSACTION
 // and TRADING_FEE, the liquidation order ID for LIQUIDATION_FEE, and the
 // position ID plus funding settlement time for FUNDING_FEE; other types carry a
-// system-generated processing ID with no business meaning.
+// system-generated processing ID with no business meaning. SECURITY_DIVIDEND is
+// a stock or ETF dividend payout and SECURITY_CORPORATE_ACTION a stock or ETF
+// split or reverse split.
 type CrossexAccountBookRecord struct {
 	ID            string          `json:"id"`
 	UserID        string          `json:"user_id"`
