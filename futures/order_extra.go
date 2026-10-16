@@ -2,6 +2,7 @@ package futures
 
 import (
 	"context"
+	"strconv"
 
 	"github.com/UnipayFI/go-gate/v4/request"
 	"github.com/shopspring/decimal"
@@ -91,18 +92,20 @@ func (s *CreateBBOOrderService) Do(ctx context.Context) (*FuturesOrder, error) {
 	return request.Do[FuturesOrder](req)
 }
 
-// AmendPriceTriggeredOrderService -- PUT /api/v4/futures/{settle}/price_orders/amend (private)
+// AmendPriceTriggeredOrderService -- PUT /api/v4/futures/{settle}/price_orders/amend/{order_id} (private)
 //
 // Amends a single pending price-triggered (auto) order in place. Only the fields
-// you set are changed; orderID identifies the pending trigger order to modify.
+// you set are changed; orderID identifies the pending trigger order to modify and
+// is sent both as the path parameter and as order_id in the body.
 type AmendPriceTriggeredOrderService struct {
-	c      *FuturesClient
-	settle Settle
-	body   map[string]any
+	c       *FuturesClient
+	settle  Settle
+	orderID int64
+	body    map[string]any
 }
 
 func (c *FuturesClient) NewAmendPriceTriggeredOrderService(settle Settle, orderID int64) *AmendPriceTriggeredOrderService {
-	return &AmendPriceTriggeredOrderService{c: c, settle: settle, body: map[string]any{
+	return &AmendPriceTriggeredOrderService{c: c, settle: settle, orderID: orderID, body: map[string]any{
 		"order_id": orderID,
 	}}
 }
@@ -150,7 +153,7 @@ func (s *AmendPriceTriggeredOrderService) SetClose(closePosition bool) *AmendPri
 }
 
 func (s *AmendPriceTriggeredOrderService) Do(ctx context.Context) (*FuturesAmendPriceOrderResult, error) {
-	req := request.Put(ctx, s.c, "/api/v4/futures/"+string(s.settle)+"/price_orders/amend", s.body).WithSign()
+	req := request.Put(ctx, s.c, "/api/v4/futures/"+string(s.settle)+"/price_orders/amend/"+strconv.FormatInt(s.orderID, 10), s.body).WithSign()
 	return request.Do[FuturesAmendPriceOrderResult](req)
 }
 
