@@ -176,7 +176,7 @@ type OTCOrderList struct {
 	Ps      int                `json:"ps"`
 	TotalPn int                `json:"total_pn"`
 	Count   int                `json:"count"`
-	List    []OTCOrderListItem `json:"list"`
+	Lists   []OTCOrderListItem `json:"lists"`
 }
 
 // OTCOrderListItem is a single fiat OTC order in a list. time is a formatted

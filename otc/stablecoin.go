@@ -117,7 +117,7 @@ type OTCStableCoinOrderList struct {
 	PageSize   int                          `json:"page_size"`
 	PageNumber int                          `json:"page_number"`
 	TotalPage  int                          `json:"total_page"`
-	List       []OTCStableCoinOrderListItem `json:"list"`
+	Lists      []OTCStableCoinOrderListItem `json:"lists"`
 }
 
 // OTCStableCoinOrderListItem is a single stablecoin OTC order. create_time is a

@@ -41,7 +41,7 @@ func TestOTC(t *testing.T) {
 			}
 			t.Fatalf("list orders: %v", err)
 		}
-		t.Logf("fiat orders=%d", len(got.Data.List))
+		t.Logf("fiat orders=%d", len(got.Data.Lists))
 		raw := testutil.FetchRawGet(t, c, cx, "/api/v4/otc/order/list",
 			map[string]string{"ps": "2"}, true)
 		testutil.AssertCovers(t, "otc/order/list", raw, got)
@@ -60,7 +60,7 @@ func TestOTC(t *testing.T) {
 			}
 			t.Fatalf("list stablecoin orders: %v", err)
 		}
-		t.Logf("stablecoin orders=%d", len(got.Data.List))
+		t.Logf("stablecoin orders=%d", len(got.Data.Lists))
 		raw := testutil.FetchRawGet(t, c, cx, "/api/v4/otc/stable_coin/order/list",
 			map[string]string{"page_size": "2"}, true)
 		testutil.AssertCovers(t, "otc/stable_coin/order/list", raw, got)
@@ -79,10 +79,10 @@ func TestOTC(t *testing.T) {
 			}
 			t.Fatalf("list orders: %v", err)
 		}
-		if len(list.Data.List) == 0 {
+		if len(list.Data.Lists) == 0 {
 			t.Skip("no fiat orders to fetch detail for")
 		}
-		orderID := list.Data.List[0].OrderID
+		orderID := list.Data.Lists[0].OrderID
 		got, err := c.NewGetOrderDetailService(orderID).Do(cx)
 		if err != nil {
 			if testutil.Tolerable(t, "otc/order/detail", err) {
