@@ -7,7 +7,6 @@ import (
 	"testing"
 	"time"
 
-	jsonexp "github.com/go-json-experiment/json"
 	"github.com/shopspring/decimal"
 )
 
@@ -21,7 +20,7 @@ func TestJSONSupport(t *testing.T) {
 // exactly like the standard `format` option (same instant, same UTC location,
 // same errors), whether Gate sends them quoted or bare.
 func TestUnixMatchesStandard(t *testing.T) {
-	std := jsonexp.ExperimentalSupportFormatTag(true)
+	std := supportFormatTag{}
 	values := map[string][]string{
 		"unix":      {"1790646162", "1790646080.498", "1546569968.123456", "0", "1", "-1500", "12.000001", "999999999", "99999999999"},
 		"unixmilli": {"1790646162123", "1790646118431.553000", "1620696347990", "0", "1", "-1500", "12.000001", "999999999999"},
