@@ -227,8 +227,11 @@ type StockOrderBookResponse struct {
 }
 
 // StockOrderBookLevel is a single price level in the order book.
+// type is returned by the live API: the best level has been observed as 1 and
+// the deeper levels as 2.
 type StockOrderBookLevel struct {
 	Price     decimal.Decimal `json:"p"`
+	Type      int             `json:"type"`
 	UserOrder bool            `json:"user_order"`
 }
 
