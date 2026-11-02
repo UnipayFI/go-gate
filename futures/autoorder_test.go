@@ -21,7 +21,7 @@ func TestFuturesAutoorder(t *testing.T) {
 		if !testutil.WriteEnabled() {
 			t.Skip("set GATE_TEST_WRITE=1 to exercise trail create")
 		}
-		_, err := c.NewCreateTrailOrderService(SettleUSDT, "BTC_USDT", decimal.NewFromInt(1)).
+		_, err := c.NewCreateTrailOrderService(SettleUSDT, "BTC_USDT", decimal.NewFromInt(1), 1).
 			SetActivationPrice(decimal.NewFromInt(1000000)).
 			SetIsGte(true).
 			SetPriceOffset("0.1%").

@@ -17,17 +17,19 @@ import (
 //
 // Creates a trailing (trail) auto order that follows the market by a callback
 // ratio or price distance. amount is the signed contract quantity (positive to
-// buy, negative to sell).
+// buy, negative to sell); priceType is the required activation reference price
+// (1 latest, 2 index, 3 mark).
 type CreateTrailOrderService struct {
 	c      *FuturesClient
 	settle Settle
 	body   map[string]any
 }
 
-func (c *FuturesClient) NewCreateTrailOrderService(settle Settle, contract string, amount decimal.Decimal) *CreateTrailOrderService {
+func (c *FuturesClient) NewCreateTrailOrderService(settle Settle, contract string, amount decimal.Decimal, priceType int) *CreateTrailOrderService {
 	return &CreateTrailOrderService{c: c, settle: settle, body: map[string]any{
-		"contract": contract,
-		"amount":   amount.String(),
+		"contract":   contract,
+		"amount":     amount.String(),
+		"price_type": priceType,
 	}}
 }
 
@@ -41,12 +43,6 @@ func (s *CreateTrailOrderService) SetActivationPrice(activationPrice decimal.Dec
 // <= the activation price (false).
 func (s *CreateTrailOrderService) SetIsGte(isGte bool) *CreateTrailOrderService {
 	s.body["is_gte"] = isGte
-	return s
-}
-
-// SetPriceType selects the activation reference price (1 latest, 2 index, 3 mark).
-func (s *CreateTrailOrderService) SetPriceType(priceType int) *CreateTrailOrderService {
-	s.body["price_type"] = priceType
 	return s
 }
 
@@ -617,8 +613,10 @@ func (s *GetChaseOrderService) Do(ctx context.Context) (*FuturesChaseOrderResult
 
 // FuturesAutoOrderEnvelope is the {code,message,data,timestamp} business envelope
 // every futures autoorder (trail/chase) endpoint wraps its payload in — unlike
-// Gate's core v4 API, which returns the payload directly. timestamp is a
-// millisecond Unix timestamp; Code 0 means success.
+// Gate's core v4 API, which returns the payload directly. Code 0 means success.
+// timestamp has been seen in milliseconds, while the docs specify microseconds
+// for trail/list (v4.106.174); the decoder infers the unit from the digit count
+// (13 digits ms, 16 digits µs), so either form decodes to the right time.
 type FuturesAutoOrderEnvelope[T any] struct {
 	Code      int       `json:"code"`
 	Message   string    `json:"message"`
