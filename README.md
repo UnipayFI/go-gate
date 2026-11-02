@@ -187,6 +187,7 @@ and `log/slog`'s JSON handler logs `!ERROR:...` in place of such a value.
 | `otc` | OTC fiat & stablecoin conversion + bank-card management |
 | `bot` | strategy bots: spot / futures / margin / infinite grid, spot / contract martingale, smart-position & futures-combo portfolios, portfolio management, AIHub recommendations |
 | `announcement` | announcement articles: paginated list with title / tag / category / language / time filters |
+| `launch` | LaunchPool projects / staking / redemption / pledge & reward records, HODLer Airdrop projects / orders / records, CandyDrop activities / rules / registration / task progress / records |
 
 ## Testing
 

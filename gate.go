@@ -26,6 +26,7 @@
 //   - otc         — /api/v4/otc/*       (OTC fiat / stablecoin conversion)
 //   - bot         — /api/v4/bot/*       (grid / martingale strategy bots)
 //   - announcement — /api/v4/ann/*      (announcement articles)
+//   - launch      — /api/v4/launch/*   (LaunchPool, HODLer Airdrop, CandyDrop)
 //
 // Authentication uses Gate's APIv4 scheme (KEY / SIGN / Timestamp headers,
 // HMAC-SHA512 over method\npath\nquery\nSHA512(body)\ntimestamp); the shared
@@ -53,6 +54,7 @@ import (
 	"github.com/UnipayFI/go-gate/v4/earn"
 	"github.com/UnipayFI/go-gate/v4/flashswap"
 	"github.com/UnipayFI/go-gate/v4/futures"
+	"github.com/UnipayFI/go-gate/v4/launch"
 	"github.com/UnipayFI/go-gate/v4/loan"
 	"github.com/UnipayFI/go-gate/v4/margin"
 	"github.com/UnipayFI/go-gate/v4/options"
@@ -169,6 +171,12 @@ func NewBotClient(opts ...client.Options) *bot.BotClient {
 // NewAnnouncementClient constructs an announcement REST client.
 func NewAnnouncementClient(opts ...client.Options) *announcement.AnnouncementClient {
 	return announcement.NewAnnouncementClient(opts...)
+}
+
+// NewLaunchClient constructs a Launch (LaunchPool / HODLer Airdrop / CandyDrop)
+// REST client.
+func NewLaunchClient(opts ...client.Options) *launch.LaunchClient {
+	return launch.NewLaunchClient(opts...)
 }
 
 // --- WebSocket clients ---
