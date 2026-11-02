@@ -83,6 +83,12 @@ func (s *CreateOrderService) SetStpAct(stpAct StpAct) *CreateOrderService {
 	return s
 }
 
+// SetUseEarn redeems Simple Earn funds to cover the order when true.
+func (s *CreateOrderService) SetUseEarn(useEarn bool) *CreateOrderService {
+	s.body["use_earn"] = useEarn
+	return s
+}
+
 // SetText sets a user-defined order label. Must be prefixed with "t-".
 func (s *CreateOrderService) SetText(text string) *CreateOrderService {
 	s.body["text"] = text
@@ -590,6 +596,7 @@ type Order struct {
 	StpID              int             `json:"stp_id"`
 	StpAct             StpAct          `json:"stp_act"`
 	FinishAs           string          `json:"finish_as"`
+	UseEarn            bool            `json:"use_earn"`
 }
 
 // OpenOrders groups the open orders of a single trading pair.
@@ -697,4 +704,5 @@ type CrossLiquidateOrder struct {
 	StpID              int             `json:"stp_id"`
 	StpAct             StpAct          `json:"stp_act"`
 	FinishAs           string          `json:"finish_as"`
+	UseEarn            bool            `json:"use_earn"`
 }
