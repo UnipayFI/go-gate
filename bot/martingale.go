@@ -56,7 +56,9 @@ func (s *CreateSpotMartingaleService) Do(ctx context.Context) (*AIHubCreateRespo
 
 // CreateContractMartingaleService -- POST /api/v4/bot/contract-martingale/create (private)
 //
-// Creates a contract Martingale strategy.
+// Creates a contract Martingale strategy. investAmount is the total strategy
+// budget (not the first-order margin) and maxOrders counts the additional
+// entries, excluding the initial one.
 type CreateContractMartingaleService struct {
 	c            *BotClient
 	strategyType string
@@ -75,9 +77,17 @@ func (c *BotClient) NewCreateContractMartingaleService(strategyType, market stri
 	}}
 }
 
-// SetStopLossPrice sets the legacy stop-loss price field.
+// SetStopLossPrice sets a positive fixed stop-loss price. It must be paired
+// with SetStopLossPriceType; omitting both creates no fixed stop.
 func (s *CreateContractMartingaleService) SetStopLossPrice(stopLossPrice decimal.Decimal) *CreateContractMartingaleService {
 	s.createParams["stop_loss_price"] = stopLossPrice.String()
+	return s
+}
+
+// SetStopLossPriceType selects the reference price of the fixed stop-loss:
+// "last", "index" or "mark". Required together with SetStopLossPrice.
+func (s *CreateContractMartingaleService) SetStopLossPriceType(stopLossPriceType string) *CreateContractMartingaleService {
+	s.createParams["stop_loss_price_type"] = stopLossPriceType
 	return s
 }
 

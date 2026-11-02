@@ -191,6 +191,42 @@ func TestBot(t *testing.T) {
 		t.Log("create contract martingale accepted")
 	})
 
+	t.Run("CreateSmartPosition", func(t *testing.T) {
+		if !testutil.WriteEnabled() {
+			t.Skip("write disabled; set GATE_TEST_WRITE=1 to run")
+		}
+		c := testClient(t)
+		cx := testutil.Ctx(t)
+		if err := c.SyncServerTime(cx); err != nil {
+			t.Fatalf("sync time: %v", err)
+		}
+		assets := []AIHubRebalanceAsset{{Asset: "BTC", Rate: "0.5"}, {Asset: "ETH", Rate: "0.5"}}
+		_, err := c.NewCreateSmartPositionService(tiny, "USDT", assets).SetPeriod("1d").Do(cx)
+		if err != nil {
+			t.Logf("create smart position: %v (tolerable)", err)
+			return
+		}
+		t.Log("create smart position accepted")
+	})
+
+	t.Run("CreateFuturesCombo", func(t *testing.T) {
+		if !testutil.WriteEnabled() {
+			t.Skip("write disabled; set GATE_TEST_WRITE=1 to run")
+		}
+		c := testClient(t)
+		cx := testutil.Ctx(t)
+		if err := c.SyncServerTime(cx); err != nil {
+			t.Fatalf("sync time: %v", err)
+		}
+		assets := []AIHubFuturesComboAsset{{Market: "BTC_USDT", Side: "buy", Rate: "0.5"}, {Market: "ETH_USDT", Side: "sell", Rate: "0.5"}}
+		_, err := c.NewCreateFuturesComboService(tiny, "USDT", assets, 1).SetPeriod("1d").Do(cx)
+		if err != nil {
+			t.Logf("create futures combo: %v (tolerable)", err)
+			return
+		}
+		t.Log("create futures combo accepted")
+	})
+
 	t.Run("StopPortfolio", func(t *testing.T) {
 		if !testutil.WriteEnabled() {
 			t.Skip("write disabled; set GATE_TEST_WRITE=1 to run")

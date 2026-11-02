@@ -185,7 +185,7 @@ and `log/slog`'s JSON handler logs `!ERROR:...` in place of such a value.
 | `stock` | traditional-finance stock spot: symbols / details, order book, exchanges, fee rate, user assets, orders, positions, transactions, fund transfer |
 | `p2p` | P2P merchant API: account & payment methods, ads, transactions, chat |
 | `otc` | OTC fiat & stablecoin conversion + bank-card management |
-| `bot` | strategy bots: spot / futures / margin / infinite grid, spot / contract martingale, portfolio management, AIHub recommendations |
+| `bot` | strategy bots: spot / futures / margin / infinite grid, spot / contract martingale, smart-position & futures-combo portfolios, portfolio management, AIHub recommendations |
 | `announcement` | announcement articles: paginated list with title / tag / category / language / time filters |
 
 ## Testing

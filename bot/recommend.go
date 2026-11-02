@@ -27,8 +27,9 @@ func (s *GetStrategyRecommendService) SetMarket(market string) *GetStrategyRecom
 	return s
 }
 
-// SetStrategyType narrows recommendations to a target policy type
-// (contract_martingale is not allowed here).
+// SetStrategyType narrows recommendations to a target policy type: spot_grid,
+// margin_grid, infinite_grid, futures_grid, spot_martingale or smart_position
+// (contract_martingale and futures_combo are manual-only and not allowed here).
 func (s *GetStrategyRecommendService) SetStrategyType(strategyType string) *GetStrategyRecommendService {
 	s.params["strategy_type"] = strategyType
 	return s
@@ -40,7 +41,9 @@ func (s *GetStrategyRecommendService) SetDirection(direction string) *GetStrateg
 	return s
 }
 
-// SetInvestAmount sets the investment amount used to size recommendations.
+// SetInvestAmount passes the investment amount as context only; it does not
+// filter recommendations by budget and is reported in unsupported_filters when
+// not consumed.
 func (s *GetStrategyRecommendService) SetInvestAmount(investAmount decimal.Decimal) *GetStrategyRecommendService {
 	s.params["invest_amount"] = investAmount.String()
 	return s
@@ -60,10 +63,18 @@ func (s *GetStrategyRecommendService) SetRefreshRecommendationID(refreshRecommen
 	return s
 }
 
-// SetLimit caps the number of recommendations returned (up to 10 when
-// scene=filter).
+// SetLimit caps the number of recommendations returned (1-10, default 10).
 func (s *GetStrategyRecommendService) SetLimit(limit int) *GetStrategyRecommendService {
 	s.params["limit"] = strconv.Itoa(limit)
+	return s
+}
+
+// SetExcludeRecommendationID excludes a previously returned candidate when
+// refreshing, identified as strategy_type|market|backtest_id (optionally with a
+// stable parameter discriminator). When no alternative exists the list is
+// empty; the other constraints are not relaxed.
+func (s *GetStrategyRecommendService) SetExcludeRecommendationID(excludeRecommendationID string) *GetStrategyRecommendService {
+	s.params["exclude_recommendation_id"] = excludeRecommendationID
 	return s
 }
 
@@ -85,11 +96,14 @@ func (s *GetStrategyRecommendService) Do(ctx context.Context) (*AIHubStrategyRec
 }
 
 // AIHubStrategyRecommendResponse is the envelope returned by the strategy
-// recommendation endpoint.
+// recommendation endpoint. HTTP 200 can carry a business failure: check Code
+// first.
 type AIHubStrategyRecommendResponse struct {
 	Code    int               `json:"code"`
 	Message string            `json:"message"`
 	Data    AIHubDiscoverData `json:"data"`
+	TraceID string            `json:"trace_id"`
+	Label   string            `json:"label"`
 }
 
 // AIHubDiscoverData is the strategy recommendation result data.
