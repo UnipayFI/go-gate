@@ -330,6 +330,25 @@ func TestEarnExtra(t *testing.T) {
 		testutil.AssertCovers(t, "earn/fixed-term/product", raw, got)
 	})
 
+	t.Run("ListFixedTermProductsSubscribable", func(t *testing.T) {
+		c := testClient(t)
+		cx := testutil.Ctx(t)
+		if err := c.SyncServerTime(cx); err != nil {
+			t.Fatalf("sync time: %v", err)
+		}
+		got, err := c.NewListFixedTermProductsService(1, 10).SetStatus(2).SetShowStatus("2").Do(cx)
+		if err != nil {
+			if testutil.Tolerable(t, "earn/fixed-term/product(status)", err) {
+				return
+			}
+			t.Fatalf("fixed-term product (status): %v", err)
+		}
+		t.Logf("subscribable fixed-term products=%d", len(got.Data.List))
+		raw := testutil.FetchRawGet(t, c, cx, "/api/v4/earn/fixed-term/product",
+			map[string]string{"page": "1", "limit": "10", "status": "2", "show_status": "2"}, true)
+		testutil.AssertCovers(t, "earn/fixed-term/product(status)", raw, got)
+	})
+
 	t.Run("ListFixedTermProductsByAsset", func(t *testing.T) {
 		c := testClient(t)
 		cx := testutil.Ctx(t)

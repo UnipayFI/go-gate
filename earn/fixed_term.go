@@ -39,6 +39,19 @@ func (s *ListFixedTermProductsService) SetType(productType int) *ListFixedTermPr
 	return s
 }
 
+// SetStatus filters by product status; pass 2 for products open for
+// subscription.
+func (s *ListFixedTermProductsService) SetStatus(status int) *ListFixedTermProductsService {
+	s.params["status"] = strconv.Itoa(status)
+	return s
+}
+
+// SetShowStatus filters by visibility status; pass "2" for visible products.
+func (s *ListFixedTermProductsService) SetShowStatus(showStatus string) *ListFixedTermProductsService {
+	s.params["show_status"] = showStatus
+	return s
+}
+
 func (s *ListFixedTermProductsService) Do(ctx context.Context) (*FixedTermProductResponse, error) {
 	req := request.Get(ctx, s.c, "/api/v4/earn/fixed-term/product", s.params).WithSign()
 	return request.Do[FixedTermProductResponse](req)
