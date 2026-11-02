@@ -185,7 +185,9 @@ func (s *CancelPriceTriggeredOrderListService) Do(ctx context.Context) ([]Future
 
 // GetPriceTriggeredOrderService -- GET /api/v4/futures/{settle}/price_orders/{order_id} (private)
 //
-// Returns the details of a single price-triggered order.
+// Returns the details of a single price-triggered order. An unknown order comes
+// back as HTTP 205 with label AUTO_ORDER_NOT_FOUND, surfaced as a
+// *client.APIError.
 type GetPriceTriggeredOrderService struct {
 	c       *FuturesClient
 	settle  Settle

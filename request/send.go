@@ -3,6 +3,7 @@ package request
 import (
 	"errors"
 	"fmt"
+	"net/http"
 	"net/url"
 	"strconv"
 
@@ -11,8 +12,8 @@ import (
 )
 
 // Do executes the request and decodes the response body into *T. Gate has no
-// success envelope, so the whole 2xx body is the payload. A non-2xx response is
-// returned as a *client.APIError.
+// success envelope, so the whole 2xx body is the payload. A non-2xx response
+// (and HTTP 205, see DoRaw) is returned as a *client.APIError.
 func Do[T any](r *Request) (resp *T, err error) {
 	body, err := DoRaw(r)
 	if err != nil {
@@ -48,8 +49,11 @@ func DoRaw(r *Request) ([]byte, error) {
 	body := response.Body()
 	r.client.GetLogger().Debugf("response: %s", common.BytesToString(body))
 
-	if response.StatusCode() >= 300 {
-		return nil, parseAPIError(response.StatusCode(), body)
+	// Gate also reports some business errors with HTTP 205 Reset Content and a
+	// {code,label,message} body (e.g. GET /futures/{settle}/price_orders/{order_id}
+	// for an unknown order), which must not be decoded as a payload.
+	if status := response.StatusCode(); status >= 300 || status == http.StatusResetContent {
+		return nil, parseAPIError(status, body)
 	}
 	return body, nil
 }
