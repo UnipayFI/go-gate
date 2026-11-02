@@ -194,7 +194,7 @@ func TestEarnExtra(t *testing.T) {
 			t.Fatalf("sync time: %v", err)
 		}
 		items := []AutoInvestPlanItem{{Asset: "BTC", Ratio: "100"}}
-		got, err := c.NewGetAutoInvestMinAmountService("USDT", items).Do(cx)
+		got, err := c.NewGetAutoInvestMinAmountService("USDT", 1, items).Do(cx)
 		if err != nil {
 			if tolerablePlaceholder(t, "earn/autoinvest/min_invest_amount", err) {
 				return
@@ -203,7 +203,7 @@ func TestEarnExtra(t *testing.T) {
 		}
 		t.Logf("min amount: %+v", got)
 		raw := testutil.FetchRawPost(t, c, cx, "/api/v4/earn/autoinvest/min_invest_amount",
-			map[string]any{"money": "USDT", "items": items}, true)
+			map[string]any{"money": "USDT", "asset_type": 1, "items": items}, true)
 		testutil.AssertCovers(t, "earn/autoinvest/min_invest_amount", raw, got)
 	})
 

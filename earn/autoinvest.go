@@ -202,16 +202,17 @@ type AutoInvestCoinsItem struct {
 // GetAutoInvestMinAmountService -- POST /api/v4/earn/autoinvest/min_invest_amount (private)
 //
 // Computes the minimum investment amount for a given pricing currency and
-// portfolio.
+// portfolio. assetType is required: 1 for cryptocurrency, 2 for TradFi stocks.
 type GetAutoInvestMinAmountService struct {
 	c    *EarnClient
 	body map[string]any
 }
 
-func (c *EarnClient) NewGetAutoInvestMinAmountService(money string, items []AutoInvestPlanItem) *GetAutoInvestMinAmountService {
+func (c *EarnClient) NewGetAutoInvestMinAmountService(money string, assetType int, items []AutoInvestPlanItem) *GetAutoInvestMinAmountService {
 	return &GetAutoInvestMinAmountService{c: c, body: map[string]any{
-		"money": money,
-		"items": items,
+		"money":      money,
+		"asset_type": assetType,
+		"items":      items,
 	}}
 }
 
