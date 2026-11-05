@@ -76,7 +76,12 @@ type StockSymbolsResponse struct {
 // 2=sell only, 4=buy and sell; LP trading suspended: 5=manual suspension,
 // 6=strategy exception, 7=stock halt, 8=stock circuit breaker halt);
 // order_fill_timing is 1=immediate, 2=after pre-market opens, 3=after regular
-// session opens.
+// session opens. margin_mode is 0=neither margin financing nor securities
+// borrowing, 1=margin financing, 2=securities borrowing, 3=both; long_im /
+// long_mm / short_im / short_mm are the initial and maintenance margin ratios
+// for long and short positions; long_borrowing_rate / short_borrowing_rate are
+// the annual margin financing and securities borrowing rates, sent as "" (and
+// decoded as zero) while no valid rate is available.
 type StockSymbol struct {
 	Symbol                 string            `json:"symbol"`
 	Exchange               string            `json:"exchange"`
@@ -99,6 +104,13 @@ type StockSymbol struct {
 	SellPriceProtection    decimal.Decimal   `json:"sell_price_protection"`
 	BuyPriceProtection     decimal.Decimal   `json:"buy_price_protection"`
 	SymbolDescs            []StockSymbolDesc `json:"symbol_descs"`
+	MarginMode             int               `json:"margin_mode"`
+	LongIM                 decimal.Decimal   `json:"long_im"`
+	LongMM                 decimal.Decimal   `json:"long_mm"`
+	ShortIM                decimal.Decimal   `json:"short_im"`
+	ShortMM                decimal.Decimal   `json:"short_mm"`
+	LongBorrowingRate      decimal.Decimal   `json:"long_borrowing_rate"`
+	ShortBorrowingRate     decimal.Decimal   `json:"short_borrowing_rate"`
 }
 
 // StockSymbolDesc is one localized symbol description.
@@ -164,7 +176,8 @@ type StockSymbolDetailsResponse struct {
 // (common stock), ETF, ADRC or ADR (depositary receipts for foreign companies
 // listed in the U.S.), ETV (exchange-traded products), PFD (preferred stock),
 // ETS (exchange-traded securities), ETN (exchange-traded notes) or FUND;
-// asset_type is STOCK or ETF; trade_mode takes the same values as in
+// asset_type is STOCK or ETF; trade_mode and the margin fields (margin_mode,
+// long/short IM/MM ratios, borrowing rates) take the same values as in
 // StockSymbol.
 type StockSymbolDetail struct {
 	Symbol                 string            `json:"symbol"`
@@ -195,6 +208,13 @@ type StockSymbolDetail struct {
 	OrderFillTiming        int               `json:"order_fill_timing"`
 	SymbolDescs            []StockSymbolDesc `json:"symbol_descs"`
 	IconLink               string            `json:"icon_link"`
+	MarginMode             int               `json:"margin_mode"`
+	LongIM                 decimal.Decimal   `json:"long_im"`
+	LongMM                 decimal.Decimal   `json:"long_mm"`
+	ShortIM                decimal.Decimal   `json:"short_im"`
+	ShortMM                decimal.Decimal   `json:"short_mm"`
+	LongBorrowingRate      decimal.Decimal   `json:"long_borrowing_rate"`
+	ShortBorrowingRate     decimal.Decimal   `json:"short_borrowing_rate"`
 }
 
 // GetOrderBookService -- GET /api/v4/stock/market/{symbol}/orderbook (public)

@@ -49,11 +49,23 @@ type StockUserAssetsResponse struct {
 }
 
 // StockUserAssets is the stock account asset snapshot. user_exists reports
-// whether the caller has activated the service.
+// whether the caller has activated the service; margin_enabled whether margin
+// financing is on. loan_amount is the absolute value of the available balance
+// when it is negative, otherwise 0; leave_liquidity / leave_liquidity_rate are
+// the excess liquidity and its ratio; aee is the available excess equity;
+// long_borrowing_rate is the annual margin financing rate, sent as "" (and
+// decoded as zero) while no valid rate is available.
 type StockUserAssets struct {
 	Equity                    decimal.Decimal `json:"equity"`
 	Balance                   decimal.Decimal `json:"balance"`
 	Available                 decimal.Decimal `json:"available"`
+	LoanAmount                decimal.Decimal `json:"loan_amount"`
+	BuyPower                  decimal.Decimal `json:"buy_power"`
+	Leverage                  decimal.Decimal `json:"leverage"`
+	LeaveLiquidity            decimal.Decimal `json:"leave_liquidity"`
+	LeaveLiquidityRate        decimal.Decimal `json:"leave_liquidity_rate"`
+	AEE                       decimal.Decimal `json:"aee"`
+	OptionsMargin             decimal.Decimal `json:"options_margin"`
 	PositionMarketValue       decimal.Decimal `json:"position_market_value"`
 	PositionPnL               decimal.Decimal `json:"position_pnl"`
 	TodayPnL                  decimal.Decimal `json:"today_pnl"`
@@ -61,6 +73,36 @@ type StockUserAssets struct {
 	OptionPositionPnL         decimal.Decimal `json:"option_position_pnl"`
 	OptionTodayPnL            decimal.Decimal `json:"option_today_pnl"`
 	UserExists                bool            `json:"user_exists"`
+	MarginEnabled             bool            `json:"margin_enabled"`
+	LongBorrowingRate         decimal.Decimal `json:"long_borrowing_rate"`
+}
+
+// SetMarginFeatureService -- PUT /api/v4/stock/users/margin-feature (private)
+//
+// Enables (true) or disables (false) margin financing for the caller. Gate
+// returns an empty data object on success.
+type SetMarginFeatureService struct {
+	c    *StockClient
+	body map[string]any
+}
+
+func (c *StockClient) NewSetMarginFeatureService(marginFeature bool) *SetMarginFeatureService {
+	return &SetMarginFeatureService{c: c, body: map[string]any{
+		"margin_feature": marginFeature,
+	}}
+}
+
+func (s *SetMarginFeatureService) Do(ctx context.Context) (*StockSetMarginFeatureResponse, error) {
+	req := request.Put(ctx, s.c, "/api/v4/stock/users/margin-feature", s.body).WithSign()
+	return request.Do[StockSetMarginFeatureResponse](req)
+}
+
+// StockSetMarginFeatureResponse is the envelope of the margin-financing toggle.
+// data is an empty object on success.
+type StockSetMarginFeatureResponse struct {
+	Label     string    `json:"label"`
+	Timestamp time.Time `json:"timestamp,format:unixmilli"`
+	Data      struct{}  `json:"data"`
 }
 
 // ListTransactionsService -- GET /api/v4/stock/transactions (private)
