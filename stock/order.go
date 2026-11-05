@@ -281,6 +281,73 @@ type StockModifyOrderResponse struct {
 	} `json:"data"`
 }
 
+// ListOrderDealsService -- GET /api/v4/stock/orders/deals (private)
+//
+// Lists the trade records (fills) of one of the caller's orders, paginated.
+type ListOrderDealsService struct {
+	c      *StockClient
+	params map[string]string
+}
+
+func (c *StockClient) NewListOrderDealsService(orderID int64) *ListOrderDealsService {
+	return &ListOrderDealsService{c: c, params: map[string]string{
+		"order_id": strconv.FormatInt(orderID, 10),
+	}}
+}
+
+// SetPage selects the result page (defaults to 1).
+func (s *ListOrderDealsService) SetPage(page int) *ListOrderDealsService {
+	s.params["page"] = strconv.Itoa(page)
+	return s
+}
+
+// SetPageSize caps the number of records per page (defaults to 10; the server
+// caps values above 100 at 100).
+func (s *ListOrderDealsService) SetPageSize(pageSize int) *ListOrderDealsService {
+	s.params["page_size"] = strconv.Itoa(pageSize)
+	return s
+}
+
+func (s *ListOrderDealsService) Do(ctx context.Context) (*StockOrderDealsResponse, error) {
+	req := request.Get(ctx, s.c, "/api/v4/stock/orders/deals", s.params).WithSign()
+	return request.Do[StockOrderDealsResponse](req)
+}
+
+// StockOrderDealsResponse is the envelope of the order trade-records query.
+type StockOrderDealsResponse struct {
+	Label     string    `json:"label"`
+	Timestamp time.Time `json:"timestamp,format:unixmilli"`
+	Data      struct {
+		Total     int64            `json:"total"`
+		TotalPage int64            `json:"total_page"`
+		List      []StockOrderDeal `json:"list"`
+	} `json:"data"`
+}
+
+// StockOrderDeal is a single trade (fill) of an order. id is the record's
+// primary key and deal_id the trade id; side is 1=sell, 2=buy; role is "maker"
+// or "taker"; price, value and fee are in the instrument's trading currency
+// (e.g. USD for US stocks, HKD for Hong Kong stocks) and fx_rate converts that
+// currency to USD; position_qty is the position quantity after the trade.
+type StockOrderDeal struct {
+	ID            int64           `json:"id"`
+	DealID        int64           `json:"deal_id"`
+	OrderID       int64           `json:"order_id"`
+	ClientOrderID string          `json:"client_order_id"`
+	UserID        int64           `json:"user_id"`
+	Symbol        string          `json:"symbol"`
+	Exchange      string          `json:"exchange"`
+	Side          int             `json:"side"`
+	Role          string          `json:"role"`
+	Price         decimal.Decimal `json:"price"`
+	Quantity      decimal.Decimal `json:"quantity"`
+	PositionQty   decimal.Decimal `json:"position_qty"`
+	AvgEntryPrice decimal.Decimal `json:"avg_entry_price"`
+	Value         decimal.Decimal `json:"value"`
+	FXRate        decimal.Decimal `json:"fx_rate"`
+	Fee           decimal.Decimal `json:"fee"`
+}
+
 // CancelOrderService -- DELETE /api/v4/stock/orders/{order_id} (private)
 //
 // Cancels a single order. Gate returns an empty object on success.

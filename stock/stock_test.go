@@ -1,6 +1,7 @@
 package stock
 
 import (
+	"strconv"
 	"testing"
 
 	"github.com/UnipayFI/go-gate/v4/internal/testutil"
@@ -192,6 +193,56 @@ func TestStock(t *testing.T) {
 		}
 		raw := testutil.FetchRawGet(t, c, cx, "/api/v4/stock/transactions", params, true)
 		testutil.AssertCovers(t, "stock/transactions", raw, got)
+	})
+
+	t.Run("ListBalanceRecords", func(t *testing.T) {
+		c := testClient(t)
+		cx := testutil.Ctx(t)
+		if err := c.SyncServerTime(cx); err != nil {
+			t.Fatalf("sync time: %v", err)
+		}
+		params := map[string]string{"page_size": "5", "include_detail": "true"}
+		got, err := c.NewListBalanceRecordsService().SetPageSize(5).SetIncludeDetail(true).Do(cx)
+		if err != nil {
+			if testutil.Tolerable(t, "stock/users/balance-records", err) {
+				return
+			}
+			t.Fatalf("balance records: %v", err)
+		}
+		raw := testutil.FetchRawGet(t, c, cx, "/api/v4/stock/users/balance-records", params, true)
+		testutil.AssertCovers(t, "stock/users/balance-records", raw, got)
+	})
+
+	t.Run("ListOrderDeals", func(t *testing.T) {
+		c := testClient(t)
+		cx := testutil.Ctx(t)
+		if err := c.SyncServerTime(cx); err != nil {
+			t.Fatalf("sync time: %v", err)
+		}
+		hist, err := c.NewListOrderHistoryService().SetPageSize(1).Do(cx)
+		if err != nil {
+			if testutil.Tolerable(t, "stock/orders/history", err) {
+				return
+			}
+			t.Fatalf("order history: %v", err)
+		}
+		if len(hist.Data.List) == 0 {
+			t.Skip("no historical stock order to query deals for")
+		}
+		orderID, err := strconv.ParseInt(hist.Data.List[0].OrderID, 10, 64)
+		if err != nil {
+			t.Fatalf("order id %q: %v", hist.Data.List[0].OrderID, err)
+		}
+		got, err := c.NewListOrderDealsService(orderID).SetPageSize(5).Do(cx)
+		if err != nil {
+			if testutil.Tolerable(t, "stock/orders/deals", err) {
+				return
+			}
+			t.Fatalf("order deals: %v", err)
+		}
+		params := map[string]string{"order_id": hist.Data.List[0].OrderID, "page_size": "5"}
+		raw := testutil.FetchRawGet(t, c, cx, "/api/v4/stock/orders/deals", params, true)
+		testutil.AssertCovers(t, "stock/orders/deals", raw, got)
 	})
 
 	// ---- private write endpoints ----

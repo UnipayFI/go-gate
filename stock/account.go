@@ -77,6 +77,126 @@ type StockUserAssets struct {
 	LongBorrowingRate         decimal.Decimal `json:"long_borrowing_rate"`
 }
 
+// ListBalanceRecordsService -- GET /api/v4/stock/users/balance-records (private)
+//
+// Lists the caller's raw balance records (cash and stock quantity changes),
+// always ordered by record id: id desc by default, or id asc returning only
+// records after start_id when SetStartID is used without SetSortDirection.
+type ListBalanceRecordsService struct {
+	c      *StockClient
+	params map[string]string
+}
+
+func (c *StockClient) NewListBalanceRecordsService() *ListBalanceRecordsService {
+	return &ListBalanceRecordsService{c: c, params: map[string]string{}}
+}
+
+// SetType filters by record type, comma-separated (e.g. "deposit", "withdraw",
+// "fee", "dividend", "sell", "buy", "award", "stock_transfer_in",
+// "stock_transfer_out").
+func (s *ListBalanceRecordsService) SetType(recordType string) *ListBalanceRecordsService {
+	s.params["type"] = recordType
+	return s
+}
+
+// SetBusiness filters by business identifier, comma-separated.
+func (s *ListBalanceRecordsService) SetBusiness(business string) *ListBalanceRecordsService {
+	s.params["business"] = business
+	return s
+}
+
+// SetSymbol narrows the result to a single symbol.
+func (s *ListBalanceRecordsService) SetSymbol(symbol string) *ListBalanceRecordsService {
+	s.params["symbol"] = symbol
+	return s
+}
+
+// SetBeginTime bounds the result to records created at or after this time
+// (sent in seconds; when both bounds are set, end_time must be after
+// begin_time).
+func (s *ListBalanceRecordsService) SetBeginTime(beginTime time.Time) *ListBalanceRecordsService {
+	s.params["begin_time"] = strconv.FormatInt(beginTime.Unix(), 10)
+	return s
+}
+
+// SetEndTime bounds the result to records created at or before this time
+// (sent in seconds).
+func (s *ListBalanceRecordsService) SetEndTime(endTime time.Time) *ListBalanceRecordsService {
+	s.params["end_time"] = strconv.FormatInt(endTime.Unix(), 10)
+	return s
+}
+
+// SetStartID returns only records whose id is greater than startID, for
+// incremental retrieval.
+func (s *ListBalanceRecordsService) SetStartID(startID int64) *ListBalanceRecordsService {
+	s.params["start_id"] = strconv.FormatInt(startID, 10)
+	return s
+}
+
+// SetSortDirection orders the result by record id ("asc" or "desc").
+func (s *ListBalanceRecordsService) SetSortDirection(sortDirection string) *ListBalanceRecordsService {
+	s.params["sort_direction"] = sortDirection
+	return s
+}
+
+// SetIncludeDetail returns the raw detail JSON string on each record when true.
+func (s *ListBalanceRecordsService) SetIncludeDetail(includeDetail bool) *ListBalanceRecordsService {
+	s.params["include_detail"] = strconv.FormatBool(includeDetail)
+	return s
+}
+
+// SetPage selects the result page (defaults to 1).
+func (s *ListBalanceRecordsService) SetPage(page int) *ListBalanceRecordsService {
+	s.params["page"] = strconv.Itoa(page)
+	return s
+}
+
+// SetPageSize caps the number of records per page (defaults to 10; the server
+// caps values above 100 at 100).
+func (s *ListBalanceRecordsService) SetPageSize(pageSize int) *ListBalanceRecordsService {
+	s.params["page_size"] = strconv.Itoa(pageSize)
+	return s
+}
+
+func (s *ListBalanceRecordsService) Do(ctx context.Context) (*StockBalanceRecordsResponse, error) {
+	req := request.Get(ctx, s.c, "/api/v4/stock/users/balance-records", s.params).WithSign()
+	return request.Do[StockBalanceRecordsResponse](req)
+}
+
+// StockBalanceRecordsResponse is the envelope of the balance-records query.
+type StockBalanceRecordsResponse struct {
+	Label     string    `json:"label"`
+	Timestamp time.Time `json:"timestamp,format:unixmilli"`
+	Data      struct {
+		Total     int64                `json:"total"`
+		TotalPage int64                `json:"total_page"`
+		List      []StockBalanceRecord `json:"list"`
+	} `json:"data"`
+}
+
+// StockBalanceRecord is a single raw balance record. change is the cash change
+// (positive credit, negative debit) and balance the cash balance snapshot after
+// it, not a stock position balance; stock_change is the stock quantity change
+// parsed from detail.amount ("" and so zero for other records); detail is the
+// raw business detail as a JSON string, present only with include_detail=true;
+// time_create is the business event time and create_time the record creation
+// time, both integer-second Unix timestamps.
+type StockBalanceRecord struct {
+	ID          int64           `json:"id"`
+	UserID      int64           `json:"user_id"`
+	Change      decimal.Decimal `json:"change"`
+	Balance     decimal.Decimal `json:"balance"`
+	StockChange decimal.Decimal `json:"stock_change"`
+	Type        string          `json:"type"`
+	Business    string          `json:"business"`
+	BusinessID  int64           `json:"business_id"`
+	Symbol      string          `json:"symbol"`
+	Detail      string          `json:"detail"`
+	Version     int             `json:"version"`
+	TimeCreate  time.Time       `json:"time_create,format:unix"`
+	CreateTime  time.Time       `json:"create_time,format:unix"`
+}
+
 // SetMarginFeatureService -- PUT /api/v4/stock/users/margin-feature (private)
 //
 // Enables (true) or disables (false) margin financing for the caller. Gate
