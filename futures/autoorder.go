@@ -614,9 +614,9 @@ func (s *GetChaseOrderService) Do(ctx context.Context) (*FuturesChaseOrderResult
 // FuturesAutoOrderEnvelope is the {code,message,data,timestamp} business envelope
 // every futures autoorder (trail/chase) endpoint wraps its payload in — unlike
 // Gate's core v4 API, which returns the payload directly. Code 0 means success.
-// timestamp has been seen in milliseconds, while the docs specify microseconds
-// for trail/list (v4.106.174); the decoder infers the unit from the digit count
-// (13 digits ms, 16 digits µs), so either form decodes to the right time.
+// timestamp is in milliseconds (live, and documented for trail/list and
+// trail/stop_all since v4.106.179); the decoder also infers the unit from the
+// digit count (13 digits ms, 16 digits µs), so either form decodes correctly.
 type FuturesAutoOrderEnvelope[T any] struct {
 	Code      int       `json:"code"`
 	Message   string    `json:"message"`
@@ -708,10 +708,10 @@ type FuturesTrailOrder struct {
 }
 
 // FuturesTrailChangeLog is one create/modify record of a trail order. updated_at
-// is a Unix-second timestamp; is_create marks the record as the creation (true)
-// or a later modification (false).
+// is a quoted Unix-second timestamp (e.g. "1546569968"); is_create marks the
+// record as the creation (true) or a later modification (false).
 type FuturesTrailChangeLog struct {
-	UpdatedAt       time.Time       `json:"updated_at,format:unix"`
+	UpdatedAt       time.Time       `json:"updated_at,string,format:unix"`
 	Amount          decimal.Decimal `json:"amount"`
 	IsGte           bool            `json:"is_gte"`
 	ActivationPrice decimal.Decimal `json:"activation_price"`
