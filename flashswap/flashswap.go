@@ -214,3 +214,55 @@ type FlashSwapPreview struct {
 	BuyAmount    decimal.Decimal `json:"buy_amount"`
 	Price        decimal.Decimal `json:"price"`
 }
+
+// Trading sides accepted by NewListFlashSwapCurrencyPairV1Service.
+const (
+	FlashSwapSideSell = 1
+	FlashSwapSideBuy  = 2
+)
+
+// ListFlashSwapCurrencyPairV1Service -- GET /api/v4/flash-swap/v1/currency-pair (private)
+//
+// Lists the flash-swap pairs available for one currency on one side
+// (FlashSwapSideSell or FlashSwapSideBuy), with their buy/sell amount limits.
+type ListFlashSwapCurrencyPairV1Service struct {
+	c      *FlashSwapClient
+	params map[string]string
+	region string
+}
+
+func (c *FlashSwapClient) NewListFlashSwapCurrencyPairV1Service(assetName string, side int) *ListFlashSwapCurrencyPairV1Service {
+	return &ListFlashSwapCurrencyPairV1Service{c: c, params: map[string]string{
+		"asset_name": assetName,
+		"side":       strconv.Itoa(side),
+	}}
+}
+
+// SetRegion sets the X-Gate-Region header (the caller's region).
+func (s *ListFlashSwapCurrencyPairV1Service) SetRegion(region string) *ListFlashSwapCurrencyPairV1Service {
+	s.region = region
+	return s
+}
+
+func (s *ListFlashSwapCurrencyPairV1Service) Do(ctx context.Context) (*FlashSwapV1CurrencyPairList, error) {
+	req := request.Get(ctx, s.c, "/api/v4/flash-swap/v1/currency-pair", s.params).WithSign()
+	req.SetHeader("X-Gate-Region", s.region)
+	return request.Do[FlashSwapV1CurrencyPairList](req)
+}
+
+// FlashSwapV1CurrencyPairList is the response of the v1 currency-pair query.
+type FlashSwapV1CurrencyPairList struct {
+	CurrencyPair []FlashSwapV1CurrencyPair `json:"currency_pair"`
+}
+
+// FlashSwapV1CurrencyPair is a flash-swap market and its sell/buy amount limits.
+// Market BTC_USDT means selling BTC to buy USDT.
+type FlashSwapV1CurrencyPair struct {
+	Market        string          `json:"market"`
+	SellAsset     string          `json:"sell_asset"`
+	SellMinAmount decimal.Decimal `json:"sell_min_amount"`
+	SellMaxAmount decimal.Decimal `json:"sell_max_amount"`
+	BuyAsset      string          `json:"buy_asset"`
+	BuyMinAmount  decimal.Decimal `json:"buy_min_amount"`
+	BuyMaxAmount  decimal.Decimal `json:"buy_max_amount"`
+}

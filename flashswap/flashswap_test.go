@@ -2,6 +2,7 @@ package flashswap
 
 import (
 	"strconv"
+	"strings"
 	"testing"
 
 	"github.com/UnipayFI/go-gate/v4/internal/testutil"
@@ -59,6 +60,31 @@ func TestFlashSwap(t *testing.T) {
 		rawOne := testutil.FetchRawGet(t, c, cx,
 			"/api/v4/flash_swap/orders/"+strconv.FormatInt(list[0].ID, 10), nil, true)
 		testutil.AssertCovers(t, "flash_swap/orders/{order_id}", rawOne, one)
+	})
+
+	t.Run("CurrencyPairV1", func(t *testing.T) {
+		c := testClient(t)
+		cx := testutil.Ctx(t)
+		if err := c.SyncServerTime(cx); err != nil {
+			t.Fatalf("sync time: %v", err)
+		}
+
+		pairs, err := c.NewListFlashSwapCurrencyPairV1Service("BTC", FlashSwapSideSell).Do(cx)
+		if err != nil {
+			// Announced in v4.106.180, but as of 2026-11-12 the route is a bare
+			// openresty 404 on every API host.
+			if strings.Contains(err.Error(), "status 404") {
+				t.Skipf("flash-swap/v1/currency-pair not deployed yet: %v", err)
+			}
+			if testutil.Tolerable(t, "flash-swap/v1/currency-pair", err) {
+				return
+			}
+			t.Fatalf("currency pair v1: %v", err)
+		}
+		t.Logf("pairs=%d", len(pairs.CurrencyPair))
+		raw := testutil.FetchRawGet(t, c, cx, "/api/v4/flash-swap/v1/currency-pair",
+			map[string]string{"asset_name": "BTC", "side": "1"}, true)
+		testutil.AssertCovers(t, "flash-swap/v1/currency-pair", raw, pairs)
 	})
 
 	t.Run("Preview", func(t *testing.T) {
