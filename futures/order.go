@@ -695,14 +695,20 @@ type BatchAmendItem struct {
 }
 
 // FuturesOrder is a futures order and its live state. create_time / update_time /
-// finish_time are float-second Unix timestamps; size is signed (positive long,
-// negative short) so there is no separate side field.
+// finish_time are float-second Unix timestamps; the *_us variants carry the same
+// instants in integer microseconds and are omitted (zero) when unavailable —
+// finish_time_us also for unfinished orders, and orders_timerange returns no
+// update_time_us. size is signed (positive long, negative short) so there is no
+// separate side field.
 type FuturesOrder struct {
 	ID           int64           `json:"id"`
 	User         int64           `json:"user"`
 	CreateTime   time.Time       `json:"create_time,format:unix"`
+	CreateTimeUs time.Time       `json:"create_time_us,format:unixmicro"`
 	UpdateTime   time.Time       `json:"update_time,format:unix"`
+	UpdateTimeUs time.Time       `json:"update_time_us,format:unixmicro"`
 	FinishTime   time.Time       `json:"finish_time,format:unix"`
+	FinishTimeUs time.Time       `json:"finish_time_us,format:unixmicro"`
 	FinishAs     FinishAs        `json:"finish_as"`
 	Status       OrderStatus     `json:"status"`
 	Contract     string          `json:"contract"`

@@ -158,13 +158,17 @@ func (s *ListFuturesOrderBookService) Do(ctx context.Context) (*FuturesOrderBook
 	return request.Do[FuturesOrderBook](req)
 }
 
-// FuturesOrderBook is a snapshot of the futures market depth.
+// FuturesOrderBook is a snapshot of the futures market depth. current/update
+// are float-second Unix timestamps; current_us/update_us carry the same instants
+// in integer microseconds and are omitted (zero) when unavailable.
 type FuturesOrderBook struct {
-	ID      int64                   `json:"id"`
-	Current time.Time               `json:"current,format:unix"`
-	Update  time.Time               `json:"update,format:unix"`
-	Asks    []FuturesOrderBookEntry `json:"asks"`
-	Bids    []FuturesOrderBookEntry `json:"bids"`
+	ID        int64                   `json:"id"`
+	Current   time.Time               `json:"current,format:unix"`
+	CurrentUs time.Time               `json:"current_us,format:unixmicro"`
+	Update    time.Time               `json:"update,format:unix"`
+	UpdateUs  time.Time               `json:"update_us,format:unixmicro"`
+	Asks      []FuturesOrderBookEntry `json:"asks"`
+	Bids      []FuturesOrderBookEntry `json:"bids"`
 }
 
 // FuturesOrderBookEntry is one price level in the futures order book. Unlike
