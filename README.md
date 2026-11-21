@@ -183,6 +183,7 @@ and `log/slog`'s JSON handler logs `!ERROR:...` in place of such a value.
 | `crossex` | cross-exchange margin, contract & stock/ETF trading: accounts, orders, positions & leverage, stock/ETF positions, transfers, convert (flash-swap), rules & fees |
 | `tradfi` | TradFi CFDs via MT5: symbols / categories / klines / tickers, orders, positions, user & MT5 account, fund transactions |
 | `stock` | traditional-finance stock spot: symbols / details, order book, exchanges, fee rate, user assets, orders, positions, transactions, fund transfer |
+| `stockoptions` | US stock options: fee rate, underlyings, contracts, expirations, option chain, order book, positions & close, orders (open/create/amend/cancel/cancel-all/detail/history) |
 | `p2p` | P2P merchant API: account & payment methods, ads, transactions, chat |
 | `otc` | OTC fiat & stablecoin conversion + bank-card management |
 | `bot` | strategy bots: spot / futures / margin / infinite grid, spot / contract martingale, smart-position & futures-combo portfolios, portfolio management, AIHub recommendations |
