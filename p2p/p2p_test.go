@@ -344,4 +344,21 @@ func TestP2P(t *testing.T) {
 		}
 		t.Log("upload chat file accepted")
 	})
+
+	t.Run("PreUploadChatFile", func(t *testing.T) {
+		if !testutil.WriteEnabled() {
+			t.Skip("write disabled; set GATE_TEST_WRITE=1 to run")
+		}
+		c := testClient(t)
+		cx := testutil.Ctx(t)
+		if err := c.SyncServerTime(cx); err != nil {
+			t.Fatalf("sync time: %v", err)
+		}
+		_, err := c.NewPreUploadChatFileService("image/png").Do(cx)
+		if err != nil {
+			t.Logf("pre upload chat file: %v (tolerable)", err)
+			return
+		}
+		t.Log("pre upload chat file accepted")
+	})
 }

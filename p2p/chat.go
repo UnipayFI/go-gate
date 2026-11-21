@@ -100,7 +100,9 @@ type P2PChatMsgObj struct {
 
 // SendChatMessageService -- POST /api/v4/p2p/merchant/chat/send_chat_message (private)
 //
-// Sends a text (or file-reference) chat message on a P2P order.
+// Sends a text (or file-reference) chat message on a P2P order. For type=1
+// (file), pass the file_key returned by PreUploadChatFileService after
+// uploading to S3.
 type SendChatMessageService struct {
 	c    *P2PClient
 	body map[string]any
@@ -138,11 +140,17 @@ type P2PSendChatResult struct {
 //
 // Uploads a base64-encoded image/video for use in a P2P order chat and returns
 // its file key.
+//
+// Deprecated: Use PreUploadChatFileService (POST /api/v4/p2p/merchant/chat/pre_upload_chat_file)
+// to obtain credentials for direct S3 uploads instead.
 type UploadChatFileService struct {
 	c    *P2PClient
 	body map[string]any
 }
 
+// NewUploadChatFileService constructs an UploadChatFileService.
+//
+// Deprecated: Use NewPreUploadChatFileService instead.
 func (c *P2PClient) NewUploadChatFileService(imageContentType, base64Img string) *UploadChatFileService {
 	return &UploadChatFileService{c: c, body: map[string]any{
 		"image_content_type": imageContentType,
@@ -158,4 +166,36 @@ func (s *UploadChatFileService) Do(ctx context.Context) (*P2PResponse[P2PUploadF
 // P2PUploadFileData carries the file key of an uploaded chat file.
 type P2PUploadFileData struct {
 	FileKey string `json:"file_key"`
+}
+
+// PreUploadChatFileService -- POST /api/v4/p2p/merchant/chat/pre_upload_chat_file (private)
+//
+// Obtains presigned S3 upload credentials for a P2P order chat file (max 100
+// MiB; credentials expire after 45 minutes). contentType must be one of
+// "image/jpeg", "image/jpg", "image/png", "image/webp", or "video/mp4". Upload
+// the file to the returned URL with all returned Fields unchanged (placing the
+// file field last); after S3 returns HTTP 204, call SendChatMessageService with
+// type=1 and the returned FileKey as message.
+type PreUploadChatFileService struct {
+	c    *P2PClient
+	body map[string]any
+}
+
+func (c *P2PClient) NewPreUploadChatFileService(contentType string) *PreUploadChatFileService {
+	return &PreUploadChatFileService{c: c, body: map[string]any{
+		"content_type": contentType,
+	}}
+}
+
+func (s *PreUploadChatFileService) Do(ctx context.Context) (*P2PResponse[P2PPreUploadFileData], error) {
+	req := request.Post(ctx, s.c, "/api/v4/p2p/merchant/chat/pre_upload_chat_file", s.body).WithSign()
+	return doP2P[P2PPreUploadFileData](req)
+}
+
+// P2PPreUploadFileData holds the presigned S3 upload URL, signed form fields,
+// and chat file key returned by PreUploadChatFileService.
+type P2PPreUploadFileData struct {
+	URL     string            `json:"url"`
+	Fields  map[string]string `json:"fields"`
+	FileKey string            `json:"file_key"`
 }
