@@ -73,8 +73,7 @@ type StockSymbolsResponse struct {
 // ETV (exchange-traded products), PFD (preferred stock), ETS (exchange-traded
 // securities), ETN (exchange-traded notes) or FUND; asset_type is STOCK or ETF;
 // trade_mode is the current session trading mode (0=disabled, 1=buy only,
-// 2=sell only, 4=buy and sell; LP trading suspended: 5=manual suspension,
-// 6=strategy exception, 7=stock halt, 8=stock circuit breaker halt);
+// 2=sell only, 4=buy and sell, 5=trading suspended);
 // order_fill_timing is 1=immediate, 2=after pre-market opens, 3=after regular
 // session opens. margin_mode is 0=neither margin financing nor securities
 // borrowing, 1=margin financing, 2=securities borrowing, 3=both; long_im /
@@ -111,6 +110,7 @@ type StockSymbol struct {
 	ShortMM                decimal.Decimal   `json:"short_mm"`
 	LongBorrowingRate      decimal.Decimal   `json:"long_borrowing_rate"`
 	ShortBorrowingRate     decimal.Decimal   `json:"short_borrowing_rate"`
+	MinOrderAmount         decimal.Decimal   `json:"min_order_amount"`
 }
 
 // StockSymbolDesc is one localized symbol description.
@@ -215,6 +215,7 @@ type StockSymbolDetail struct {
 	ShortMM                decimal.Decimal   `json:"short_mm"`
 	LongBorrowingRate      decimal.Decimal   `json:"long_borrowing_rate"`
 	ShortBorrowingRate     decimal.Decimal   `json:"short_borrowing_rate"`
+	MinOrderAmount         decimal.Decimal   `json:"min_order_amount"`
 }
 
 // GetOrderBookService -- GET /api/v4/stock/market/{symbol}/orderbook (public)
