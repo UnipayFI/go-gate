@@ -61,8 +61,17 @@ type Currency struct {
 	Category         []string            `json:"category"`
 	// TotalSupply is a plain string because uncapped assets report it as "∞",
 	// which is not a parseable decimal.
-	TotalSupply string          `json:"total_supply"`
-	MarketCap   decimal.Decimal `json:"market_cap"`
+	TotalSupply           string                `json:"total_supply"`
+	MarketCap             decimal.Decimal       `json:"market_cap"`
+	TokenizedSecurityInfo TokenizedSecurityInfo `json:"tokenized_security_info"`
+}
+
+// TokenizedSecurityInfo carries metadata for a tokenized stock currency.
+// CurrentMultiplier is populated only for stock tokens that have undergone a
+// split (e.g. "2" for a 2-for-1 split).
+type TokenizedSecurityInfo struct {
+	Underlying        string `json:"underlying"`
+	CurrentMultiplier string `json:"current_multiplier"`
 }
 
 // SpotCurrencyChain is one blockchain a currency can be deposited/withdrawn on.

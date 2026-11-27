@@ -101,6 +101,14 @@ func (s *CreateOrderService) SetActionMode(actionMode string) *CreateOrderServic
 	return s
 }
 
+// SetRPITakerAccess requests RPI taker eligibility for the order through Speed
+// Bump. Only orders with an effective time_in_force of ioc or fok are
+// supported (not supported by batch order placement).
+func (s *CreateOrderService) SetRPITakerAccess(rpiTakerAccess bool) *CreateOrderService {
+	s.body["rpi_taker_access"] = rpiTakerAccess
+	return s
+}
+
 func (s *CreateOrderService) Do(ctx context.Context) (*Order, error) {
 	req := request.Post(ctx, s.c, "/api/v4/spot/orders", s.body).WithSign()
 	return request.Do[Order](req)
@@ -109,7 +117,8 @@ func (s *CreateOrderService) Do(ctx context.Context) (*Order, error) {
 // CreateBatchOrdersService -- POST /api/v4/spot/batch_orders (private)
 //
 // Places multiple orders in a single request (max 10). Each order is described
-// with the same builder used by NewCreateOrderService.
+// with the same builder used by NewCreateOrderService (rpi_taker_access is not
+// supported for batch orders).
 type CreateBatchOrdersService struct {
 	c      *SpotClient
 	orders []*CreateOrderService
