@@ -327,9 +327,10 @@ func (s *CancelFuturesOrderService) Do(ctx context.Context) (*FuturesOrder, erro
 //
 // Lists the account's personal trade fills, covering roughly the past 6 months.
 type GetMyTradesService struct {
-	c      *FuturesClient
-	settle Settle
-	params map[string]string
+	c        *FuturesClient
+	settle   Settle
+	params   map[string]string
+	timeUnit string
 }
 
 func (c *FuturesClient) NewGetMyTradesService(settle Settle) *GetMyTradesService {
@@ -366,8 +367,17 @@ func (s *GetMyTradesService) SetLastID(lastID string) *GetMyTradesService {
 	return s
 }
 
+// SetTimeUnit sets the timeUnit request header. Pass "microsecond" to receive
+// create_time_us (Unix microseconds) when supported (Futures 3.0 accounts); any
+// other value or omission leaves create_time_us unset.
+func (s *GetMyTradesService) SetTimeUnit(timeUnit string) *GetMyTradesService {
+	s.timeUnit = timeUnit
+	return s
+}
+
 func (s *GetMyTradesService) Do(ctx context.Context) ([]FuturesMyTrade, error) {
 	req := request.Get(ctx, s.c, "/api/v4/futures/"+string(s.settle)+"/my_trades", s.params).WithSign()
+	req.SetHeader("timeUnit", s.timeUnit)
 	resp, err := request.Do[[]FuturesMyTrade](req)
 	if err != nil {
 		return nil, err
@@ -379,9 +389,10 @@ func (s *GetMyTradesService) Do(ctx context.Context) ([]FuturesMyTrade, error) {
 //
 // Lists the account's personal trade fills within a Unix-second time range.
 type GetMyTradesWithTimeRangeService struct {
-	c      *FuturesClient
-	settle Settle
-	params map[string]string
+	c        *FuturesClient
+	settle   Settle
+	params   map[string]string
+	timeUnit string
 }
 
 func (c *FuturesClient) NewGetMyTradesWithTimeRangeService(settle Settle) *GetMyTradesWithTimeRangeService {
@@ -424,8 +435,17 @@ func (s *GetMyTradesWithTimeRangeService) SetRole(role string) *GetMyTradesWithT
 	return s
 }
 
+// SetTimeUnit sets the timeUnit request header. Pass "microsecond" to receive
+// create_time_us (Unix microseconds) when supported (Futures 3.0 accounts); any
+// other value or omission leaves create_time_us unset.
+func (s *GetMyTradesWithTimeRangeService) SetTimeUnit(timeUnit string) *GetMyTradesWithTimeRangeService {
+	s.timeUnit = timeUnit
+	return s
+}
+
 func (s *GetMyTradesWithTimeRangeService) Do(ctx context.Context) ([]FuturesMyTrade, error) {
 	req := request.Get(ctx, s.c, "/api/v4/futures/"+string(s.settle)+"/my_trades_timerange", s.params).WithSign()
+	req.SetHeader("timeUnit", s.timeUnit)
 	resp, err := request.Do[[]FuturesMyTrade](req)
 	if err != nil {
 		return nil, err
@@ -771,20 +791,23 @@ type FuturesCancelBatchResult struct {
 
 // FuturesMyTrade is one personal trade fill. GetMyTrades returns the fill id in
 // "id" (int64) while GetMyTradesWithTimeRange returns it in "trade_id" (string);
-// both keys are captured here. create_time is a float-second Unix timestamp.
+// both keys are captured here. create_time is a float-second Unix timestamp;
+// create_time_us carries integer Unix microseconds when requested with
+// timeUnit: microsecond (Futures 3.0 accounts) and is omitted (zero) otherwise.
 type FuturesMyTrade struct {
-	ID         int64           `json:"id"`
-	TradeID    string          `json:"trade_id"`
-	CreateTime time.Time       `json:"create_time,format:unix"`
-	Contract   string          `json:"contract"`
-	OrderID    string          `json:"order_id"`
-	Size       int64           `json:"size"`
-	CloseSize  int64           `json:"close_size"`
-	Price      decimal.Decimal `json:"price"`
-	Role       string          `json:"role"`
-	Text       string          `json:"text"`
-	Fee        decimal.Decimal `json:"fee"`
-	PointFee   decimal.Decimal `json:"point_fee"`
+	ID           int64           `json:"id"`
+	TradeID      string          `json:"trade_id"`
+	CreateTime   time.Time       `json:"create_time,format:unix"`
+	CreateTimeUs time.Time       `json:"create_time_us,format:unixmicro"`
+	Contract     string          `json:"contract"`
+	OrderID      string          `json:"order_id"`
+	Size         int64           `json:"size"`
+	CloseSize    int64           `json:"close_size"`
+	Price        decimal.Decimal `json:"price"`
+	Role         string          `json:"role"`
+	Text         string          `json:"text"`
+	Fee          decimal.Decimal `json:"fee"`
+	PointFee     decimal.Decimal `json:"point_fee"`
 }
 
 // PositionClose is one closed-position record with its realized-PnL breakdown.

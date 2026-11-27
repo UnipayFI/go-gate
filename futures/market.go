@@ -220,9 +220,10 @@ func (s *ListFuturesRPIOrderBookService) Do(ctx context.Context) (*FuturesOrderB
 //
 // Returns recent public trades for a contract.
 type ListFuturesTradesService struct {
-	c      *FuturesClient
-	settle Settle
-	params map[string]string
+	c        *FuturesClient
+	settle   Settle
+	params   map[string]string
+	timeUnit string
 }
 
 func (c *FuturesClient) NewListFuturesTradesService(settle Settle, contract string) *ListFuturesTradesService {
@@ -259,8 +260,17 @@ func (s *ListFuturesTradesService) SetTo(t time.Time) *ListFuturesTradesService 
 	return s
 }
 
+// SetTimeUnit sets the timeUnit request header. Pass "microsecond" to receive
+// create_time_us (Unix microseconds) in the response when available; any other
+// value or omission leaves create_time_us unset.
+func (s *ListFuturesTradesService) SetTimeUnit(timeUnit string) *ListFuturesTradesService {
+	s.timeUnit = timeUnit
+	return s
+}
+
 func (s *ListFuturesTradesService) Do(ctx context.Context) ([]FuturesTrade, error) {
 	req := request.Get(ctx, s.c, "/api/v4/futures/"+string(s.settle)+"/trades", s.params)
+	req.SetHeader("timeUnit", s.timeUnit)
 	resp, err := request.Do[[]FuturesTrade](req)
 	if err != nil {
 		return nil, err
@@ -271,10 +281,13 @@ func (s *ListFuturesTradesService) Do(ctx context.Context) ([]FuturesTrade, erro
 // FuturesTrade is a single public trade. size is signed (negative = taker sell);
 // there is no separate side field. create_time and create_time_ms are both unix
 // seconds — create_time_ms simply carries millisecond precision (3 decimals).
+// create_time_us carries integer Unix microseconds when the request sends
+// timeUnit: microsecond and is omitted (zero) otherwise.
 type FuturesTrade struct {
 	ID           int64           `json:"id"`
 	CreateTime   time.Time       `json:"create_time,format:unix"`
 	CreateTimeMs time.Time       `json:"create_time_ms,format:unix"`
+	CreateTimeUs time.Time       `json:"create_time_us,format:unixmicro"`
 	Contract     string          `json:"contract"`
 	Size         int64           `json:"size"`
 	Price        decimal.Decimal `json:"price"`

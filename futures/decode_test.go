@@ -33,4 +33,20 @@ func TestMicrosecondFields(t *testing.T) {
 	if !o.FinishTimeUs.IsZero() {
 		t.Errorf("order: omitted finish_time_us decoded to %s, want zero", o.FinishTimeUs)
 	}
+
+	var tr FuturesTrade
+	if err := common.JSONUnmarshal([]byte(`{"id":10,"create_time":1623898993,"create_time_ms":1623898993.123,"create_time_us":1623898993123456,"contract":"BTC_USDT","size":1,"price":"40000"}`), &tr); err != nil {
+		t.Fatal(err)
+	}
+	if !tr.CreateTimeUs.Equal(time.UnixMicro(1623898993123456)) {
+		t.Errorf("trade: create_time_us=%s", tr.CreateTimeUs)
+	}
+
+	var mt FuturesMyTrade
+	if err := common.JSONUnmarshal([]byte(`{"id":11,"create_time":1623898993.123,"create_time_us":1623898993123456,"contract":"BTC_USDT","order_id":"1","size":1,"price":"40000"}`), &mt); err != nil {
+		t.Fatal(err)
+	}
+	if !mt.CreateTimeUs.Equal(time.UnixMicro(1623898993123456)) {
+		t.Errorf("my_trade: create_time_us=%s", mt.CreateTimeUs)
+	}
 }

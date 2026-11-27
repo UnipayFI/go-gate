@@ -65,6 +65,19 @@ func TestFuturesMarket(t *testing.T) {
 		map[string]string{"contract": "BTC_USDT", "limit": "2"}, false)
 	testutil.AssertCovers(t, "futures/trades", raw, trades)
 
+	// ListFuturesTrades with timeUnit: microsecond
+	tradesUs, err := c.NewListFuturesTradesService(SettleUSDT, "BTC_USDT").SetLimit(2).SetTimeUnit("microsecond").Do(cx)
+	if err != nil {
+		t.Fatalf("trades microsecond: %v", err)
+	}
+	if len(tradesUs) == 0 {
+		t.Fatal("no microsecond trades returned")
+	}
+	t.Logf("trades(us)=%d first=%+v", len(tradesUs), tradesUs[0])
+	if tradesUs[0].CreateTimeUs.IsZero() {
+		t.Errorf("expected create_time_us when timeUnit=microsecond, got zero")
+	}
+
 	// ListFuturesCandlesticks
 	candles, err := c.NewListFuturesCandlesticksService(SettleUSDT, "BTC_USDT").SetLimit(2).Do(cx)
 	if err != nil {
