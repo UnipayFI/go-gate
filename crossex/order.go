@@ -112,7 +112,9 @@ func (s *GetOrderService) Do(ctx context.Context) (*CrossexOrder, error) {
 
 // AmendOrderService -- PUT /api/v4/crossex/orders/{order_id} (private)
 //
-// Modifies the quantity and/or price of an open cross-exchange order.
+// Modifies the quantity and/or price of an open cross-exchange order. Supply at
+// least one new positive value; omit a field or send "0" to preserve its current
+// value.
 type AmendOrderService struct {
 	c       *CrossexClient
 	orderID string
@@ -123,13 +125,13 @@ func (c *CrossexClient) NewAmendOrderService(orderID string) *AmendOrderService 
 	return &AmendOrderService{c: c, orderID: orderID, body: map[string]any{}}
 }
 
-// SetQty sets the new order quantity.
+// SetQty sets the new order quantity. Omit or send 0 to keep the current quantity.
 func (s *AmendOrderService) SetQty(qty decimal.Decimal) *AmendOrderService {
 	s.body["qty"] = qty.String()
 	return s
 }
 
-// SetPrice sets the new order price.
+// SetPrice sets the new order price. Omit or send 0 to keep the current price.
 func (s *AmendOrderService) SetPrice(price decimal.Decimal) *AmendOrderService {
 	s.body["price"] = price.String()
 	return s
@@ -238,9 +240,23 @@ func (s *ListHistoryOrdersService) SetTo(to time.Time) *ListHistoryOrdersService
 	return s
 }
 
-// SetAttributes filters by order attribute (COMMON, LIQ, REDUCE).
+// SetAttributes filters by comma-separated order attributes (COMMON, LIQ,
+// REDUCE, ADL, SETTLEMENT, REBASE).
 func (s *ListHistoryOrdersService) SetAttributes(attributes string) *ListHistoryOrdersService {
 	s.params["attributes"] = attributes
+	return s
+}
+
+// SetOrderID filters by exact platform order ID. When combined with SetText,
+// records must match both filters.
+func (s *ListHistoryOrdersService) SetOrderID(orderID int64) *ListHistoryOrdersService {
+	s.params["order_id"] = strconv.FormatInt(orderID, 10)
+	return s
+}
+
+// SetText filters by exact client order ID (text).
+func (s *ListHistoryOrdersService) SetText(text string) *ListHistoryOrdersService {
+	s.params["text"] = text
 	return s
 }
 
@@ -331,6 +347,12 @@ func (s *ListHistoryTradesService) SetTo(to time.Time) *ListHistoryTradesService
 	return s
 }
 
+// SetOrderID filters fills to the specified platform order ID.
+func (s *ListHistoryTradesService) SetOrderID(orderID int64) *ListHistoryTradesService {
+	s.params["order_id"] = strconv.FormatInt(orderID, 10)
+	return s
+}
+
 func (s *ListHistoryTradesService) Do(ctx context.Context) ([]CrossexTrade, error) {
 	req := request.Get(ctx, s.c, "/api/v4/crossex/history_trades", s.params).WithSign()
 	resp, err := request.Do[[]CrossexTrade](req)
@@ -385,7 +407,8 @@ type CrossexCancelResult struct {
 
 // CrossexTrade is one cross-exchange trade fill. create_time is a millisecond
 // Unix timestamp. Stock and ETF fill prices are in the listing market currency
-// (USD, HKD, KRW or JPY).
+// (USD, HKD, KRW or JPY); FXRate is the USDT exchange rate per unit of that
+// currency (USDT value before fees = qty * price * fx_rate).
 type CrossexTrade struct {
 	UserID        string          `json:"user_id"`
 	TransactionID string          `json:"transaction_id"`
@@ -397,6 +420,7 @@ type CrossexTrade struct {
 	Side          string          `json:"side"`
 	Qty           decimal.Decimal `json:"qty"`
 	Price         decimal.Decimal `json:"price"`
+	FXRate        decimal.Decimal `json:"fx_rate"`
 	Fee           decimal.Decimal `json:"fee"`
 	FeeCoin       string          `json:"fee_coin"`
 	FeeRate       decimal.Decimal `json:"fee_rate"`

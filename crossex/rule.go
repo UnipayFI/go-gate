@@ -40,6 +40,9 @@ func (s *QuerySymbolsService) Do(ctx context.Context) ([]CrossexSymbol, error) {
 // symbols use {market}_{STOCK|ETF}_{security_code}_USDT (e.g.
 // US_STOCK_AAPL_USDT, HK_STOCK_00700_USDT, US_ETF_SPY_USDT), with the listing
 // market (US, HK, KR or JP) as exchange_type and STOCK or ETF as business_type.
+// Aster futures symbols use ASTER_FUTURE_{Base}_{Counter}, and Hyperliquid
+// HIP-3 symbols include any DEX prefix (e.g. HYPERLIQUID_FUTURE_xyz:XYZ100_USDC).
+// State is "live", "suspend" or "rebase" (contract position adjustment started).
 // delist_time is a millisecond Unix timestamp (0 means not delisted).
 type CrossexSymbol struct {
 	Symbol          string          `json:"symbol"`

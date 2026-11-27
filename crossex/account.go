@@ -53,10 +53,13 @@ type CrossexAccount struct {
 }
 
 // CrossexAccountAsset is a per-venue, per-currency balance within the account.
+// Price is the USDT valuation price ("1" for USDT; index price or corresponding
+// spot pair latest price for other assets).
 type CrossexAccountAsset struct {
 	UserID                     string          `json:"user_id"`
 	Coin                       string          `json:"coin"`
 	ExchangeType               string          `json:"exchange_type"`
+	Price                      decimal.Decimal `json:"price"`
 	Balance                    decimal.Decimal `json:"balance"`
 	UPnL                       decimal.Decimal `json:"upnl"`
 	Equity                     decimal.Decimal `json:"equity"`

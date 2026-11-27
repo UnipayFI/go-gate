@@ -37,6 +37,8 @@ func (s *QueryTransferCoinsService) Do(ctx context.Context) ([]CrossexTransferCo
 }
 
 // CrossexTransferCoin is a currency supported for cross-exchange transfers.
+// MinTransAmount (which includes the estimated fee) and EstFee are decimal
+// strings on the wire.
 type CrossexTransferCoin struct {
 	Coin           string          `json:"coin"`
 	MinTransAmount decimal.Decimal `json:"min_trans_amount"`
@@ -47,7 +49,8 @@ type CrossexTransferCoin struct {
 
 // ListTransfersService -- GET /api/v4/crossex/transfers (private)
 //
-// Returns the account's cross-exchange fund-transfer history.
+// Returns the account's cross-exchange fund-transfer history. Rate limit: 1,200
+// requests per 60 seconds.
 type ListTransfersService struct {
 	c      *CrossexClient
 	params map[string]string
@@ -60,6 +63,12 @@ func (c *CrossexClient) NewListTransfersService() *ListTransfersService {
 // SetCoin narrows the result to a single currency.
 func (s *ListTransfersService) SetCoin(coin string) *ListTransfersService {
 	s.params["coin"] = coin
+	return s
+}
+
+// SetStatus filters by transfer status (PENDING, SUCCESS or FAIL).
+func (s *ListTransfersService) SetStatus(status string) *ListTransfersService {
+	s.params["status"] = status
 	return s
 }
 
@@ -122,7 +131,8 @@ type CrossexTransferRecord struct {
 //
 // Transfers funds between cross-exchange credit accounts (from receiving account
 // to debit account). When either side is CROSSEX_HYPERLIQUID or CROSSEX_LIGHTER,
-// the other side must be SPOT and only USDC is supported.
+// the other side must be SPOT and only USDC is supported; for CROSSEX_ASTER,
+// only USDT transfers to or from SPOT are supported.
 type CreateTransferService struct {
 	c    *CrossexClient
 	body map[string]any

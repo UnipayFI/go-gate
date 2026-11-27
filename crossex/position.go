@@ -257,29 +257,34 @@ func (s *ListPositionsService) Do(ctx context.Context) ([]CrossexPosition, error
 // CrossexPosition is one open contract position. funding_fee is the position's
 // accumulated funding fee — positive is a gain, negative a loss. funding_time,
 // create_time and update_time are millisecond Unix timestamps (funding_time 0
-// means the funding fee has not been collected yet).
+// means the funding fee has not been collected yet). RiskLimits carries
+// position-specific risk-limit tiers when applicable (empty otherwise).
 type CrossexPosition struct {
-	UserID            string          `json:"user_id"`
-	PositionID        string          `json:"position_id"`
-	Symbol            string          `json:"symbol"`
-	PositionSide      string          `json:"position_side"`
-	InitialMargin     decimal.Decimal `json:"initial_margin"`
-	MaintenanceMargin decimal.Decimal `json:"maintenance_margin"`
-	PositionQty       decimal.Decimal `json:"position_qty"`
-	PositionValue     decimal.Decimal `json:"position_value"`
-	UPnL              decimal.Decimal `json:"upnl"`
-	UPnLRate          decimal.Decimal `json:"upnl_rate"`
-	EntryPrice        decimal.Decimal `json:"entry_price"`
-	MarkPrice         decimal.Decimal `json:"mark_price"`
-	Leverage          decimal.Decimal `json:"leverage"`
-	MaxLeverage       decimal.Decimal `json:"max_leverage"`
-	RiskLimit         decimal.Decimal `json:"risk_limit"`
-	Fee               decimal.Decimal `json:"fee"`
-	FundingFee        decimal.Decimal `json:"funding_fee"`
-	FundingTime       time.Time       `json:"funding_time,string,format:unixmilli"`
-	CreateTime        time.Time       `json:"create_time,string,format:unixmilli"`
-	UpdateTime        time.Time       `json:"update_time,string,format:unixmilli"`
-	ClosedPnL         decimal.Decimal `json:"closed_pnl"`
+	UserID            string             `json:"user_id"`
+	PositionID        string             `json:"position_id"`
+	Symbol            string             `json:"symbol"`
+	PositionSide      string             `json:"position_side"`
+	InitialMargin     decimal.Decimal    `json:"initial_margin"`
+	IsolatedMargin    decimal.Decimal    `json:"isolated_margin"`
+	MarginMode        string             `json:"margin_mode"`
+	MaintenanceMargin decimal.Decimal    `json:"maintenance_margin"`
+	PositionQty       decimal.Decimal    `json:"position_qty"`
+	PositionValue     decimal.Decimal    `json:"position_value"`
+	UPnL              decimal.Decimal    `json:"upnl"`
+	UPnLRate          decimal.Decimal    `json:"upnl_rate"`
+	EntryPrice        decimal.Decimal    `json:"entry_price"`
+	LiqPrice          decimal.Decimal    `json:"liq_price"`
+	MarkPrice         decimal.Decimal    `json:"mark_price"`
+	Leverage          decimal.Decimal    `json:"leverage"`
+	MaxLeverage       decimal.Decimal    `json:"max_leverage"`
+	RiskLimit         decimal.Decimal    `json:"risk_limit"`
+	Fee               decimal.Decimal    `json:"fee"`
+	FundingFee        decimal.Decimal    `json:"funding_fee"`
+	FundingTime       time.Time          `json:"funding_time,string,format:unixmilli"`
+	CreateTime        time.Time          `json:"create_time,string,format:unixmilli"`
+	UpdateTime        time.Time          `json:"update_time,string,format:unixmilli"`
+	ClosedPnL         decimal.Decimal    `json:"closed_pnl"`
+	RiskLimits        []CrossexRiskLimit `json:"risk_limits"`
 }
 
 // ListMarginPositionsService -- GET /api/v4/crossex/margin_positions (private)
