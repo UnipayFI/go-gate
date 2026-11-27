@@ -37,6 +37,14 @@ func (s *CreateOrderService) SetPromotionCode(promotionCode string) *CreateOrder
 	return s
 }
 
+// SetReceiveType sets the optional remittance designation. Corporate accounts
+// accept "YOU", "GATE", "RECIPIENT" or "VA" (virtual account); individual
+// accounts accept "GATE", "PERSON" or "VA".
+func (s *CreateOrderService) SetReceiveType(receiveType string) *CreateOrderService {
+	s.body["receive_type"] = receiveType
+	return s
+}
+
 func (s *CreateOrderService) Do(ctx context.Context) (*OTCAckResponse, error) {
 	req := request.Post(ctx, s.c, "/api/v4/otc/order/create", s.body).WithSign()
 	return request.Do[OTCAckResponse](req)
